@@ -22,13 +22,12 @@ const SideBar = () => {
     <Box
       sx={{
         height: "100vh",
-        width: 320,
+        width: 300,
         background: "#1d3557",
-        borderTopRightRadius: 40,
       }}
     >
       <List sx={{ pt: 0 }}>
-        {sideBarItems.map((item, index) => (
+        {sideBarItems.map((item) => (
           <Link
             href={item.route}
             key={item.id}
@@ -38,7 +37,6 @@ const SideBar = () => {
               disablePadding
               sx={{
                 ":hover": { background: "#457b9d" },
-                borderTopRightRadius: index === 0 ? 40 : 0,
               }}
             >
               <ListItemButton>

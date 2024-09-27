@@ -1,27 +1,13 @@
-"use client";
-
 import ItemCard from "@/components/ItemCard";
-import { config } from "@/config";
+import { prisma } from "@/libs/prisma";
 import CategoryIcon from "@mui/icons-material/Category";
 import { Box, Button } from "@mui/material";
-import { MenuCategories } from "@prisma/client";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 
-import { useEffect, useState } from "react";
-
-const MenuCategoriesPage = () => {
-  const [menuCategories, setMenuCategories] = useState<MenuCategories[]>([]);
-  const router = useRouter();
-
-  const getMenuCategories = async () => {
-    const res = await fetch(`${config.backofficeApiUrl}/menu-categories`);
-    const data = await res.json();
-    setMenuCategories(data);
-  };
-
-  useEffect(() => {
-    getMenuCategories();
-  }, []);
+const MenuCategoriesPage = async () => {
+  const menuCategories = await prisma.menuCategories.findMany({
+    orderBy: { id: "desc" },
+  });
 
   return (
     <>
@@ -31,13 +17,14 @@ const MenuCategoriesPage = () => {
           justifyContent: "flex-end",
         }}
       >
-        <Button
-          variant="contained"
-          sx={{ bgcolor: "#1D3557", "&:hover": { bgcolor: "#2d4466" } }}
-          onClick={() => router.push("/backoffice/menu-categories/new")}
-        >
-          New Menu Category
-        </Button>
+        <Link href={"/backoffice/menu-categories/new"}>
+          <Button
+            variant="contained"
+            sx={{ bgcolor: "#1D3557", "&:hover": { bgcolor: "#2d4466" } }}
+          >
+            New Menu Category
+          </Button>
+        </Link>
       </Box>
       <Box sx={{ mt: 5, display: "flex", flexWrap: "wrap", gap: 2 }}>
         {menuCategories.map((menuCategory) => (
