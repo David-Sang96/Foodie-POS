@@ -4,14 +4,14 @@ import { prisma } from "@/libs/prisma";
 import { redirect } from "next/navigation";
 
 export async function updateMenuCategory(formData: FormData) {
-  const id = formData.get("menuCategoryId");
-  const updatedMenuCategory = formData.get("menuCategoryName");
+  const id = formData.get("menuCategoryId") as string;
+  const updatedMenuCategory = formData.get("menuCategoryName") as string;
 
-  if (!id || typeof id !== "string") {
+  if (!id) {
     throw new Error("Invalid menu category id");
   }
 
-  if (!updatedMenuCategory || typeof updatedMenuCategory !== "string") {
+  if (!updatedMenuCategory) {
     throw new Error("Invalid menu category name");
   }
 
@@ -23,9 +23,9 @@ export async function updateMenuCategory(formData: FormData) {
 }
 
 export async function createMenuCategory(formData: FormData) {
-  const newMenuCategory = formData.get("menuCategoryName");
+  const newMenuCategory = formData.get("menuCategoryName") as string;
 
-  if (!newMenuCategory || typeof newMenuCategory !== "string") {
+  if (!newMenuCategory) {
     throw new Error("Invalid menu category name.");
   }
 
@@ -34,9 +34,9 @@ export async function createMenuCategory(formData: FormData) {
 }
 
 export async function deleteMenuCategory(formData: FormData) {
-  const id = formData.get("menuCategoryId");
+  const id = formData.get("menuCategoryId") as string;
 
-  if (!id || typeof id !== "string") {
+  if (!id) {
     throw new Error("Invalid menu category id");
   }
 

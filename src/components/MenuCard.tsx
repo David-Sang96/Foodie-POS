@@ -1,13 +1,13 @@
-import { Menu } from "@/app/backoffice/menus/page";
 import { Box } from "@mui/material";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
+import { Menus } from "@prisma/client";
 import Link from "next/link";
 
 interface Props {
-  menu: Menu;
+  menu: Menus;
 }
 
 export default function MenuCard({ menu }: Props) {

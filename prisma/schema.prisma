@@ -14,11 +14,12 @@ datasource db {
 }
 
 model Menus {
-  id                  Int                   @id @default(autoincrement())
-  name                String
-  price               Int?                  @default(0)
-  isAvailable         Boolean?              @default(true)
-  menuCategoriesMenus MenuCategoriesMenus[]
+  id                   Int                    @id @default(autoincrement())
+  name                 String
+  price                Int?                   @default(0)
+  isAvailable          Boolean?               @default(true)
+  menuCategoriesMenus  MenuCategoriesMenus[]
+  menusAddonCategories MenusAddonCategories[]
 }
 
 model MenuCategories {
@@ -33,4 +34,18 @@ model MenuCategoriesMenus {
   menuId         Int
   menuCategory   MenuCategories @relation(fields: [menuCategoryId], references: [id])
   menu           Menus          @relation(fields: [menuId], references: [id])
+}
+
+model AddonCategories {
+  id   Int    @id @default(autoincrement())
+  name String
+  menusAddonCategories MenusAddonCategories[]
+}
+
+model MenusAddonCategories {
+  id              Int @id @default(autoincrement())
+  addonCategoryId Int
+  menuId          Int
+  addonCategory AddonCategories @relation(fields: [addonCategoryId], references: [id])
+  menu          Menus           @relation(fields: [menuId], references: [id])
 }

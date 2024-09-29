@@ -1,17 +1,12 @@
-"use client";
-
-import MultiSelect from "@/components/MultiSelect";
-import { config } from "@/config";
 import {
   Box,
   Button,
   Checkbox,
   FormControlLabel,
   TextField,
+  Typography,
 } from "@mui/material";
-import { MenuCategories, MenuCategoriesMenus, Menus } from "@prisma/client";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { deleteMenu, getMenu, getMenuCategories, updateMenu } from "../actions";
 
 interface Props {
   params: {
@@ -19,64 +14,25 @@ interface Props {
   };
 }
 
-const UpdateMenu = ({ params }: Props) => {
-  const [menu, setMenu] = useState<Menus>();
-  const [menuCategories, setMenuCategories] = useState<MenuCategories[]>([]);
-  const [selected, setSelected] = useState<number[]>([]);
-  const router = useRouter();
+const UpdateMenu = async ({ params }: Props) => {
   const { id } = params;
 
-  useEffect(() => {
-    getMenu();
-    getMenuCategories();
-  }, [id]);
+  const menu = await getMenu(Number(id));
+  const menuCategories = await getMenuCategories();
 
-  const getMenu = async () => {
-    const response = await fetch(`${config.backofficeApiUrl}/menus/${id}`);
-    const data = await response.json();
-    const menuCategoryIds = data.menuCategoriesMenus.map(
-      (item: MenuCategoriesMenus) => item.menuCategoryId
-    );
-    setSelected(menuCategoryIds);
-    setMenu(data);
-  };
-
-  const getMenuCategories = async () => {
-    const response = await fetch(`${config.backofficeApiUrl}/menu-categories`);
-    const data = await response.json();
-    setMenuCategories(data);
-  };
-
-  const handleUpdateMenu = async () => {
-    await fetch(`${config.backofficeApiUrl}/menus`, {
-      method: "put",
-      headers: {
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({ ...menu, menuCategoryIds: selected }),
-    });
-
-    router.push("/backoffice/menus");
-  };
-
-  const handleDeleteMenu = async () => {
-    await fetch(`${config.backofficeApiUrl}/menus/${id}`, {
-      method: "delete",
-    });
-
-    router.push("/backoffice/menus");
-  };
-
-  if (!menu) return null;
+  const menuCategoryIds = menu.menuCategoriesMenus.map(
+    (item) => item.menuCategoryId
+  );
 
   return (
     <>
-      <Box sx={{ display: "flex", justifyContent: "end" }}>
-        <Button
-          variant="contained"
-          sx={{ bgcolor: "chocolate" }}
-          onClick={handleDeleteMenu}
-        >
+      <Box
+        sx={{ display: "flex", justifyContent: "end" }}
+        component={"form"}
+        action={deleteMenu}
+      >
+        <input type="hidden" name="menuId" value={id} />
+        <Button variant="contained" sx={{ bgcolor: "chocolate" }} type="submit">
           Delete
         </Button>
       </Box>
@@ -86,33 +42,63 @@ const UpdateMenu = ({ params }: Props) => {
           flexDirection: "column",
           gap: 1.5,
           mt: 3,
+          width: "40%",
         }}
+        component={"form"}
+        action={updateMenu}
       >
         <TextField
           label="name"
           variant="outlined"
           defaultValue={menu.name}
-          onChange={(e) => setMenu({ ...menu, name: e.target.value })}
+          name="name"
         />
         <TextField
           label="price"
           variant="outlined"
           defaultValue={menu.price}
-          onChange={(e) => setMenu({ ...menu, price: Number(e.target.value) })}
+          name="price"
         />
-        <MultiSelect
-          items={menuCategories}
-          title="MenuCategories"
-          selected={selected}
-          setSelected={setSelected}
-        />
+        <input type="hidden" name="menuId" value={id} />
+        <Box>
+          <Typography sx={{ my: 1, fontWeight: "bold" }}>
+            MenuCategories
+          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+
+              border: " 1px solid lightgray",
+              px: 2,
+              py: 0.5,
+              borderRadius: 1,
+            }}
+          >
+            {menuCategories.map((menuCategory) => (
+              <FormControlLabel
+                key={menuCategory.id}
+                control={
+                  <Checkbox
+                    defaultChecked={menuCategoryIds?.includes(menuCategory.id)}
+                    name="menuCategory"
+                    value={menuCategory.id}
+                  />
+                }
+                label={menuCategory.name}
+              />
+            ))}
+          </Box>
+        </Box>
+
         <FormControlLabel
           control={
-            <Checkbox defaultChecked={menu.isAvailable ? true : false} />
+            <Checkbox
+              defaultChecked={menu.isAvailable ? true : false}
+              name="isAvailable"
+            />
           }
           label="Available"
-          value={menu.isAvailable}
-          onChange={(_, value) => setMenu({ ...menu, isAvailable: value })}
         />
         <Button
           variant="contained"
@@ -121,7 +107,7 @@ const UpdateMenu = ({ params }: Props) => {
             "&:hover": { bgcolor: "#2d4466" },
             width: "fit-content",
           }}
-          onClick={handleUpdateMenu}
+          type="submit"
         >
           Update
         </Button>

@@ -1,31 +1,10 @@
-"use client";
-
 import MenuCard from "@/components/MenuCard";
-import { config } from "@/config";
 import { Box, Button } from "@mui/material";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { getMenus } from "./actions";
 
-import { useEffect, useState } from "react";
-
-export interface Menu {
-  id: number;
-  name: string;
-  price: number;
-  isAvailable: boolean;
-}
-const Menus = () => {
-  const [menus, setMenus] = useState<Menu[]>([]);
-  const router = useRouter();
-
-  const getMenus = async () => {
-    const res = await fetch(`${config.backofficeApiUrl}/menus`);
-    const data = await res.json();
-    setMenus(data);
-  };
-
-  useEffect(() => {
-    getMenus();
-  }, []);
+const MenusPage = async () => {
+  const menus = await getMenus();
 
   return (
     <>
@@ -35,13 +14,14 @@ const Menus = () => {
           justifyContent: "flex-end",
         }}
       >
-        <Button
-          variant="contained"
-          sx={{ bgcolor: "#1D3557", "&:hover": { bgcolor: "#2d4466" } }}
-          onClick={() => router.push("/backoffice/menus/new")}
-        >
-          New Menu
-        </Button>
+        <Link href={"/backoffice/menus/new"}>
+          <Button
+            variant="contained"
+            sx={{ bgcolor: "#1D3557", "&:hover": { bgcolor: "#2d4466" } }}
+          >
+            New Menu
+          </Button>
+        </Link>
       </Box>
       <Box sx={{ mt: 5, display: "flex", flexWrap: "wrap", gap: 2 }}>
         {menus.map((menu) => (
@@ -52,4 +32,4 @@ const Menus = () => {
   );
 };
 
-export default Menus;
+export default MenusPage;

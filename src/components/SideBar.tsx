@@ -22,7 +22,7 @@ const SideBar = () => {
     <Box
       sx={{
         height: "100vh",
-        width: 300,
+        width: 270,
         background: "#1d3557",
       }}
     >
