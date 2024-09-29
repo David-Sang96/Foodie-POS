@@ -1,3 +1,4 @@
+import { prisma } from "@/libs/prisma";
 import {
   Box,
   Button,
@@ -6,7 +7,11 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { deleteMenu, getMenu, getMenuCategories, updateMenu } from "../actions";
+import {
+  deleteAddonCategory,
+  getAddonCategory,
+  updateAddonCategory,
+} from "../actions";
 
 interface Props {
   params: {
@@ -14,24 +19,20 @@ interface Props {
   };
 }
 
-const UpdateMenu = async ({ params }: Props) => {
+const UpdateAddonCategory = async ({ params }: Props) => {
   const { id } = params;
-
-  const menu = await getMenu(Number(id));
-  const menuCategories = await getMenuCategories();
-
-  const menuCategoryIds = menu.menuCategoriesMenus.map(
-    (item) => item.menuCategoryId
-  );
+  const addonCategory = await getAddonCategory(Number(id));
+  const menus = await prisma.menus.findMany();
+  const menuIds = addonCategory.menusAddonCategories.map((item) => item.menuId);
 
   return (
-    <>
+    <Box>
       <Box
         sx={{ display: "flex", justifyContent: "end" }}
         component={"form"}
-        action={deleteMenu}
+        action={deleteAddonCategory}
       >
-        <input type="hidden" name="id" value={id} />
+        <input type="hidden" value={id} name="id" />
         <Button variant="contained" sx={{ bgcolor: "chocolate" }} type="submit">
           Delete
         </Button>
@@ -41,29 +42,20 @@ const UpdateMenu = async ({ params }: Props) => {
           display: "flex",
           flexDirection: "column",
           gap: 1.5,
-          mt: 3,
           width: "40%",
         }}
         component={"form"}
-        action={updateMenu}
+        action={updateAddonCategory}
       >
         <TextField
           label="name"
           variant="outlined"
-          defaultValue={menu.name}
+          defaultValue={addonCategory.name}
           name="name"
         />
-        <TextField
-          label="price"
-          variant="outlined"
-          defaultValue={menu.price}
-          name="price"
-        />
-        <input type="hidden" name="id" value={id} />
+        <input type="hidden" value={id} name="id" />
         <Box>
-          <Typography sx={{ my: 1, fontWeight: "bold" }}>
-            MenuCategories
-          </Typography>
+          <Typography sx={{ my: 1, fontWeight: "bold" }}>Menus</Typography>
           <Box
             sx={{
               display: "flex",
@@ -75,42 +67,44 @@ const UpdateMenu = async ({ params }: Props) => {
               borderRadius: 1,
             }}
           >
-            {menuCategories.map((menuCategory) => (
+            {menus.map((menu) => (
               <FormControlLabel
-                key={menuCategory.id}
+                key={menu.id}
                 control={
                   <Checkbox
-                    defaultChecked={menuCategoryIds?.includes(menuCategory.id)}
-                    name="menuCategory"
-                    value={menuCategory.id}
+                    name="menu"
+                    value={menu.id}
+                    defaultChecked={menuIds.includes(menu.id)}
                   />
                 }
-                label={menuCategory.name}
+                label={menu.name}
               />
             ))}
           </Box>
         </Box>
-
         <FormControlLabel
           control={
-            <Checkbox defaultChecked={!!menu.isAvailable} name="isAvailable" />
+            <Checkbox
+              name="isRequired"
+              defaultChecked={!!addonCategory.isRequired}
+            />
           }
-          label="Available"
+          label={"isRequired"}
         />
         <Button
           variant="contained"
           sx={{
-            bgcolor: "#1D3557",
-            "&:hover": { bgcolor: "#2d4466" },
+            bgcolor: "#1d3557",
+            "&hover": { bgcolor: "#2d4466" },
             width: "fit-content",
           }}
           type="submit"
         >
-          Update
+          update
         </Button>
       </Box>
-    </>
+    </Box>
   );
 };
 
-export default UpdateMenu;
+export default UpdateAddonCategory;

@@ -43,7 +43,7 @@ export async function createMenu(formData: FormData) {
 }
 
 export async function updateMenu(formData: FormData) {
-  const menuId = Number(formData.get("menuId"));
+  const menuId = Number(formData.get("id"));
   const name = formData.get("name") as string;
   const price = Number(formData.get("price"));
   const isAvailable = !!formData.get("isAvailable");
@@ -83,7 +83,7 @@ export async function updateMenu(formData: FormData) {
 }
 
 export async function deleteMenu(formData: FormData) {
-  const menuId = Number(formData.get("menuId"));
+  const menuId = Number(formData.get("id"));
   await prisma.menuCategoriesMenus.deleteMany({
     where: { menuId },
   });

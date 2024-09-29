@@ -1,7 +1,12 @@
+import ItemCard from "@/components/ItemCard";
+import CategoryIcon from "@mui/icons-material/Category";
 import { Box, Button } from "@mui/material";
 import Link from "next/link";
+import { getAddonCategories } from "./actions";
 
-const AddonCategoryPage = () => {
+const AddonCategoryPage = async () => {
+  const addonCategories = await getAddonCategories();
+
   return (
     <>
       <Box
@@ -19,11 +24,17 @@ const AddonCategoryPage = () => {
           </Button>
         </Link>
       </Box>
-      {/* <Box sx={{ mt: 5, display: "flex", flexWrap: "wrap", gap: 2 }}>
-    {menus.map((menu) => (
-      <MenuCard menu={menu} key={menu.id} />
-    ))}
-  </Box> */}
+      <Box sx={{ mt: 5, display: "flex", flexWrap: "wrap", gap: 2 }}>
+        {addonCategories.map((addonCategory) => (
+          <ItemCard
+            key={addonCategory.id}
+            title={addonCategory.name}
+            href={`/backoffice/addon-categories/${addonCategory.id}`}
+            icon={<CategoryIcon fontSize="large" />}
+            isAvailable
+          />
+        ))}
+      </Box>
     </>
   );
 };

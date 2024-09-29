@@ -21,7 +21,7 @@ const UpdateMenuCategory = async ({ params }: Props) => {
         component={"form"}
         action={deleteMenuCategory}
       >
-        <input type="hidden" value={id} name="menuCategoryId" />
+        <input type="hidden" value={id} name="id" />
         <Button variant="contained" sx={{ bgcolor: "chocolate" }} type="submit">
           Delete
         </Button>
@@ -38,9 +38,9 @@ const UpdateMenuCategory = async ({ params }: Props) => {
             label="name"
             variant="outlined"
             defaultValue={menuCategory?.name}
-            name="menuCategoryName"
+            name="name"
           />
-          <input type="hidden" value={id} name="menuCategoryId" />
+          <input type="hidden" value={id} name="id" />
           <Button
             sx={{
               bgcolor: "#1D3557",

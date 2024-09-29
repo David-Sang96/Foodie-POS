@@ -13,6 +13,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
 model Menus {
   id                   Int                    @id @default(autoincrement())
   name                 String
@@ -30,22 +31,32 @@ model MenuCategories {
 
 model MenuCategoriesMenus {
   id             Int            @id @default(autoincrement())
-  menuCategoryId Int
   menuId         Int
+  menuCategoryId Int
   menuCategory   MenuCategories @relation(fields: [menuCategoryId], references: [id])
   menu           Menus          @relation(fields: [menuId], references: [id])
 }
 
 model AddonCategories {
-  id   Int    @id @default(autoincrement())
-  name String
+  id                   Int                    @id @default(autoincrement())
+  name                 String
+  isRequired           Boolean                @default(false)
   menusAddonCategories MenusAddonCategories[]
+  addons               Addons[]
 }
 
 model MenusAddonCategories {
-  id              Int @id @default(autoincrement())
-  addonCategoryId Int
+  id              Int             @id @default(autoincrement())
   menuId          Int
-  addonCategory AddonCategories @relation(fields: [addonCategoryId], references: [id])
-  menu          Menus           @relation(fields: [menuId], references: [id])
+  addonCategoryId Int
+  addonCategory   AddonCategories @relation(fields: [addonCategoryId], references: [id])
+  menu            Menus           @relation(fields: [menuId], references: [id])
+}
+
+model Addons {
+  id              Int             @id @default(autoincrement())
+  name            String
+  price           Int
+  addonCategoryId Int
+  addonCategory   AddonCategories @relation(fields: [addonCategoryId], references: [id])
 }

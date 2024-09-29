@@ -18,7 +18,7 @@ const NewMenuPage = async () => {
           display: "flex",
           flexDirection: "column",
           gap: 1.5,
-          mt: 3,
+          mt: 2,
         }}
       >
         <TextField label="name" variant="outlined" name="name" />
