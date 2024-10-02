@@ -49,6 +49,7 @@ CREATE TABLE "Addons" (
     "name" TEXT NOT NULL,
     "price" INTEGER NOT NULL,
     "addonCategoryId" INTEGER NOT NULL,
+    "isAvailable" BOOLEAN NOT NULL DEFAULT true,
 
     CONSTRAINT "Addons_pkey" PRIMARY KEY ("id")
 );
