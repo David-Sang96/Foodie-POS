@@ -88,6 +88,8 @@ export async function deleteMenu(formData: FormData) {
     where: { menuId },
   });
 
+  await prisma.menusAddonCategories.deleteMany({ where: { menuId } });
+
   await prisma.menus.delete({ where: { id: menuId } });
   redirect("/backoffice/menus");
 }
