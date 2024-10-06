@@ -1,3 +1,4 @@
+import { getCompanyMenuCategories } from "@/libs/actions";
 import {
   Box,
   Button,
@@ -6,7 +7,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { deleteMenu, getMenu, getMenuCategories, updateMenu } from "../actions";
+import { deleteMenu, getMenu, updateMenu } from "../actions";
 
 interface Props {
   params: {
@@ -18,7 +19,7 @@ const UpdateMenu = async ({ params }: Props) => {
   const { id } = params;
 
   const menu = await getMenu(Number(id));
-  const menuCategories = await getMenuCategories();
+  const menuCategories = await getCompanyMenuCategories();
 
   const menuCategoryIds = menu.menuCategoriesMenus.map(
     (item) => item.menuCategoryId

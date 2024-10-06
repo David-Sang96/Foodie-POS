@@ -1,6 +1,12 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { config } from "@/config";
-import NextAuth from "next-auth";
+import { createDefaultData, getUser } from "@/libs/actions";
+import NextAuth, { User } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+
+interface Props {
+  user: User;
+}
 
 export const authOptions = {
   providers: [
@@ -12,6 +18,17 @@ export const authOptions = {
   // show custom authentication pages instead of default given by next-auth
   pages: {
     signIn: "/auth/signIn",
+  },
+  callbacks: {
+    // run this fn between, after sign in with google and before going to home page
+    async signIn({ user }: Props) {
+      const email = user.email as string;
+      const userFromDB = await getUser(email);
+      if (!userFromDB) {
+        await createDefaultData(user);
+      }
+      return true;
+    },
   },
 };
 

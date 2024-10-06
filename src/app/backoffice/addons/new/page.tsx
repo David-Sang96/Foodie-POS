@@ -1,3 +1,4 @@
+import { getCompanyAddonCategories } from "@/libs/actions";
 import {
   Box,
   Button,
@@ -6,10 +7,10 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { createAddon, getAddonCategories } from "../actions";
+import { createAddon } from "../actions";
 
 const NewAddon = async () => {
-  const addonCategories = await getAddonCategories();
+  const addonCategories = await getCompanyAddonCategories();
 
   return (
     <Box

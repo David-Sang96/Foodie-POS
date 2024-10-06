@@ -1,5 +1,6 @@
 "use server";
 
+import { getCompanyId } from "@/libs/actions";
 import { prisma } from "@/libs/prisma";
 import { redirect } from "next/navigation";
 
@@ -24,12 +25,13 @@ export async function updateMenuCategory(formData: FormData) {
 
 export async function createMenuCategory(formData: FormData) {
   const name = formData.get("name") as string;
+  const companyId = (await getCompanyId()) as number;
 
   if (!name) {
     throw new Error("Invalid menu category name.");
   }
 
-  await prisma.menuCategories.create({ data: { name } });
+  await prisma.menuCategories.create({ data: { name, companyId } });
   redirect("/backoffice/menu-categories");
 }
 

@@ -1,3 +1,4 @@
+import { getCompanyMenus } from "@/libs/actions";
 import { prisma } from "@/libs/prisma";
 import {
   Box,
@@ -22,8 +23,11 @@ interface Props {
 const UpdateAddonCategory = async ({ params }: Props) => {
   const { id } = params;
   const addonCategory = await getAddonCategory(Number(id));
-  const menus = await prisma.menus.findMany();
-  const menuIds = addonCategory.menusAddonCategories.map((item) => item.menuId);
+  const menus = await getCompanyMenus();
+  const menuAddonCategories = await prisma.menusAddonCategories.findMany({
+    where: { addonCategoryId: addonCategory.id },
+  });
+  const menuAddonCategoryIds = menuAddonCategories.map((item) => item.menuId);
 
   return (
     <Box>
@@ -74,7 +78,7 @@ const UpdateAddonCategory = async ({ params }: Props) => {
                   <Checkbox
                     name="menu"
                     value={menu.id}
-                    defaultChecked={menuIds.includes(menu.id)}
+                    defaultChecked={menuAddonCategoryIds.includes(menu.id)}
                   />
                 }
                 label={menu.name}

@@ -23,8 +23,8 @@ export default function ItemCard({
     <Link href={href} style={{ textDecoration: "none" }}>
       <Card
         sx={{
-          width: 170,
-          height: 120,
+          width: 200,
+          height: 150,
           display: "flex",
           justifyContent: "center",
           transition: "transform 0.3s ease, box-shadow 0.3s ease",

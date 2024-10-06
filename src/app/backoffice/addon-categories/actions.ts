@@ -12,10 +12,6 @@ export async function getAddonCategory(id: number) {
   return addonCategory;
 }
 
-export async function getAddonCategories() {
-  return await prisma.addonCategories.findMany({ orderBy: { id: "desc" } });
-}
-
 export async function createAddonCategory(formData: FormData) {
   const name = formData.get("name") as string;
   const isRequired = !!formData.get("isRequired");

@@ -1,3 +1,4 @@
+import { getCompanyAddonCategories } from "@/libs/actions";
 import {
   Box,
   Button,
@@ -6,12 +7,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import {
-  deleteAddon,
-  getAddon,
-  getAddonCategories,
-  updateAddon,
-} from "../actions";
+import { deleteAddon, getAddon, updateAddon } from "../actions";
 
 interface Props {
   params: {
@@ -23,7 +19,7 @@ const UpdateAddon = async ({ params }: Props) => {
   const { id } = params;
 
   const addon = await getAddon(Number(id));
-  const addonCategories = await getAddonCategories();
+  const addonCategories = await getCompanyAddonCategories();
 
   return (
     <Box>

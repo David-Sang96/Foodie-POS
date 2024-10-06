@@ -1,7 +1,12 @@
+import ItemCard from "@/components/ItemCard";
+import { getCompanyTables } from "@/libs/actions";
+import TableBarIcon from "@mui/icons-material/TableBar";
 import { Box, Button } from "@mui/material";
 import Link from "next/link";
 
-const TablesPage = () => {
+const TablesPage = async () => {
+  const tables = await getCompanyTables();
+
   return (
     <>
       <Box
@@ -19,11 +24,17 @@ const TablesPage = () => {
           </Button>
         </Link>
       </Box>
-      {/* <Box sx={{ mt: 5, display: "flex", flexWrap: "wrap", gap: 2 }}>
-{menus.map((menu) => (
-  <MenuCard menu={menu} key={menu.id} />
-))}
-</Box> */}
+      <Box sx={{ mt: 5, display: "flex", flexWrap: "wrap", gap: 2 }}>
+        {tables.map((table) => (
+          <ItemCard
+            icon={<TableBarIcon fontSize="large" />}
+            key={table.id}
+            title={table.name}
+            href={`/backoffice/tables/${table.id}`}
+            isAvailable
+          />
+        ))}
+      </Box>
     </>
   );
 };

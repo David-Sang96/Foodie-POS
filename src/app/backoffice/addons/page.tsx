@@ -1,11 +1,11 @@
 import ItemCard from "@/components/ItemCard";
+import { getCompanyAddons } from "@/libs/actions";
 import EggIcon from "@mui/icons-material/Egg";
 import { Box, Button } from "@mui/material";
 import Link from "next/link";
-import { getAddons } from "./actions";
 
 const AddonsPage = async () => {
-  const addons = await getAddons();
+  const addons = await getCompanyAddons();
 
   return (
     <>
@@ -27,7 +27,7 @@ const AddonsPage = async () => {
       <Box sx={{ mt: 5, display: "flex", flexWrap: "wrap", gap: 2 }}>
         {addons.map((addon) => (
           <ItemCard
-            icon={<EggIcon />}
+            icon={<EggIcon fontSize="large" />}
             key={addon.id}
             title={addon.name}
             subtitle={String(addon.price)}

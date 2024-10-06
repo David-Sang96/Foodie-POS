@@ -1,4 +1,4 @@
-import { prisma } from "@/libs/prisma";
+import { getCompanyMenus } from "@/libs/actions";
 import {
   Box,
   Button,
@@ -10,7 +10,7 @@ import {
 import { createAddonCategory } from "../actions";
 
 const NewAddonCategory = async () => {
-  const menus = await prisma.menus.findMany();
+  const menus = await getCompanyMenus();
 
   return (
     <Box

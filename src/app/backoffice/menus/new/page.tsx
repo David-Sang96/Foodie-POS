@@ -1,3 +1,4 @@
+import { getCompanyMenuCategories } from "@/libs/actions";
 import {
   Box,
   Button,
@@ -6,10 +7,10 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { createMenu, getMenuCategories } from "../actions";
+import { createMenu } from "../actions";
 
 const NewMenuPage = async () => {
-  const menuCategories = await getMenuCategories();
+  const menuCategories = await getCompanyMenuCategories();
 
   return (
     <Box sx={{ width: "45%" }} component={"form"} action={createMenu}>

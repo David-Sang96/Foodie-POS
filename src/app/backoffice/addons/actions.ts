@@ -3,14 +3,6 @@
 import { prisma } from "@/libs/prisma";
 import { redirect } from "next/navigation";
 
-export async function getAddons() {
-  return await prisma.addons.findMany({ orderBy: { id: "desc" } });
-}
-
-export async function getAddonCategories() {
-  return await prisma.addonCategories.findMany();
-}
-
 export async function getAddon(id: number) {
   const addon = await prisma.addons.findFirst({ where: { id } });
   if (!addon) return redirect("/backoffice/addons");

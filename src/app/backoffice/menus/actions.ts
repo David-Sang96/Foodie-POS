@@ -3,14 +3,6 @@
 import { prisma } from "@/libs/prisma";
 import { redirect } from "next/navigation";
 
-export async function getMenuCategories() {
-  return await prisma.menuCategories.findMany();
-}
-
-export async function getMenus() {
-  return await prisma.menus.findMany({ orderBy: { id: "desc" } });
-}
-
 export async function getMenu(id: number) {
   const menu = await prisma.menus.findFirst({
     where: { id: Number(id) },

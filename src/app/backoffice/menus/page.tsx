@@ -1,10 +1,10 @@
 import MenuCard from "@/components/MenuCard";
+import { getCompanyMenus } from "@/libs/actions";
 import { Box, Button } from "@mui/material";
 import Link from "next/link";
-import { getMenus } from "./actions";
 
 const MenusPage = async () => {
-  const menus = await getMenus();
+  const menus = await getCompanyMenus();
 
   return (
     <>

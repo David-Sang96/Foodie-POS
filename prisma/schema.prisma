@@ -7,6 +7,23 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Users {
+  id        Int     @id @default(autoincrement())
+  name      String
+  email     String  @unique
+  companyId Int
+  company   Company @relation(fields: [companyId], references: [id])
+}
+
+model Company {
+  id             Int              @id @default(autoincrement())
+  name           String
+  address        String
+  users          Users[]
+  menuCategories MenuCategories[]
+  locations      Locations[]
+}
+
 model Menus {
   id                   Int                    @id @default(autoincrement())
   name                 String
@@ -20,6 +37,8 @@ model MenuCategories {
   id                  Int                   @id @default(autoincrement())
   name                String
   menuCategoriesMenus MenuCategoriesMenus[]
+  companyId           Int
+  company             Company               @relation(references: [id], fields: [companyId])
 }
 
 model MenuCategoriesMenus {
@@ -53,4 +72,19 @@ model Addons {
   addonCategoryId Int
   isAvailable     Boolean         @default(true)
   addonCategory   AddonCategories @relation(fields: [addonCategoryId], references: [id])
+}
+
+model Locations {
+  id        Int      @id @default(autoincrement())
+  name      String
+  companyId Int
+  company   Company  @relation(references: [id], fields: [companyId])
+  tables    Tables[]
+}
+
+model Tables {
+  id         Int       @id @default(autoincrement())
+  name       String
+  locationId Int
+  locations  Locations @relation(fields: [locationId], references: [id])
 }

@@ -1,11 +1,11 @@
 import ItemCard from "@/components/ItemCard";
+import { getCompanyAddonCategories } from "@/libs/actions";
 import CategoryIcon from "@mui/icons-material/Category";
 import { Box, Button } from "@mui/material";
 import Link from "next/link";
-import { getAddonCategories } from "./actions";
 
 const AddonCategoryPage = async () => {
-  const addonCategories = await getAddonCategories();
+  const addonCategories = await getCompanyAddonCategories();
 
   return (
     <>
