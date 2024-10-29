@@ -126,8 +126,13 @@ export async function getCompanyTables() {
   });
 }
 
+export async function getLocationTables(locationId: number) {
+  return await prisma.tables.findMany({ where: { locationId } });
+}
+
 export async function getCompanyLocations() {
   return await prisma.locations.findMany({
+    orderBy: { id: "asc" },
     where: { companyId: await getCompanyId() },
   });
 }

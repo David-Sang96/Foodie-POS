@@ -59,7 +59,7 @@ export default function MenuCard({ menu }: Props) {
                 color: "#000",
               }}
             >
-              ${menu.price}
+              RM {menu.price}
             </Typography>
           </Box>
           <Typography

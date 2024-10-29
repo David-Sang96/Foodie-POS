@@ -25,20 +25,23 @@ model Company {
 }
 
 model Menus {
-  id                   Int                    @id @default(autoincrement())
-  name                 String
-  price                Int?                   @default(0)
-  isAvailable          Boolean?               @default(true)
-  menuCategoriesMenus  MenuCategoriesMenus[]
-  menusAddonCategories MenusAddonCategories[]
+  id                    Int                     @id @default(autoincrement())
+  name                  String
+  price                 Int?                    @default(0)
+  isAvailable           Boolean?                @default(true)
+  menuCategoriesMenus   MenuCategoriesMenus[]
+  menusAddonCategories  MenusAddonCategories[]
+  disabledLocationMenus DisabledLocationMenus[]
 }
 
 model MenuCategories {
-  id                  Int                   @id @default(autoincrement())
-  name                String
-  menuCategoriesMenus MenuCategoriesMenus[]
-  companyId           Int
-  company             Company               @relation(references: [id], fields: [companyId])
+  id                             Int                              @id @default(autoincrement())
+  name                           String
+  isAvailable                    Boolean?                @default(true)
+  menuCategoriesMenus            MenuCategoriesMenus[]
+  disabledLocationMenuCategories DisabledLocationMenuCategories[]
+  companyId                      Int
+  company                        Company                          @relation(references: [id], fields: [companyId])
 }
 
 model MenuCategoriesMenus {
@@ -75,11 +78,13 @@ model Addons {
 }
 
 model Locations {
-  id        Int      @id @default(autoincrement())
-  name      String
-  companyId Int
-  company   Company  @relation(references: [id], fields: [companyId])
-  tables    Tables[]
+  id                             Int                              @id @default(autoincrement())
+  name                           String
+  companyId                      Int
+  company                        Company                          @relation(references: [id], fields: [companyId])
+  tables                         Tables[]
+  disabledLocationMenuCategories DisabledLocationMenuCategories[]
+  disabledLocationMenus          DisabledLocationMenus[]
 }
 
 model Tables {
@@ -87,4 +92,20 @@ model Tables {
   name       String
   locationId Int
   locations  Locations @relation(fields: [locationId], references: [id])
+}
+
+model DisabledLocationMenuCategories {
+  id             Int            @id @default(autoincrement())
+  locationId     Int
+  menuCategoryId Int
+  locations      Locations      @relation(fields: [locationId], references: [id])
+  menuCategories MenuCategories @relation(fields: [menuCategoryId], references: [id])
+}
+
+model DisabledLocationMenus {
+  id         Int       @id @default(autoincrement())
+  locationId Int
+  menuId     Int
+  locations  Locations @relation(fields: [locationId], references: [id])
+  menus      Menus     @relation(fields: [menuId], references: [id])
 }

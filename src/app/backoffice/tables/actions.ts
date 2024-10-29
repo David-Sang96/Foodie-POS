@@ -1,6 +1,5 @@
 "use server";
 
-import { getCompanyLocations } from "@/libs/actions";
 import { prisma } from "@/libs/prisma";
 import { redirect } from "next/navigation";
 
@@ -13,8 +12,10 @@ export async function getTable(id: number) {
 
 export async function createTable(formData: FormData) {
   const name = formData.get("name") as string;
+  const locationId = formData.get("locationId");
+
   await prisma.tables.create({
-    data: { name, locationId: (await getCompanyLocations())[0].id },
+    data: { name, locationId: Number(locationId) },
   });
 
   redirect("/backoffice/tables");

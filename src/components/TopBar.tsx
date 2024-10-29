@@ -1,10 +1,10 @@
-"use client";
-
-import { Button } from "@mui/material";
+import { getCompanyLocations } from "@/libs/actions";
 import Box from "@mui/material/Box";
-import { signOut } from "next-auth/react";
+import LocationSignOut from "./LocationSignOut";
 
-const TopBar = () => {
+const TopBar = async () => {
+  const locations = await getCompanyLocations();
+
   return (
     <Box
       style={{
@@ -18,14 +18,7 @@ const TopBar = () => {
       }}
     >
       <h2>Foodie POS</h2>
-      <h3>Sanchaung</h3>
-      <Button
-        variant="contained"
-        sx={{ bgcolor: "#1D3557", "&:hover": { bgcolor: "#2d4466" } }}
-        onClick={() => signOut()}
-      >
-        Logout
-      </Button>
+      <LocationSignOut locations={locations} />
     </Box>
   );
 };

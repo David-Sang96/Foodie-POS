@@ -31,7 +31,7 @@ const MenuCategoriesPage = async () => {
             key={menuCategory.id}
             icon={<CategoryIcon fontSize="large" />}
             href={`/backoffice/menu-categories/${menuCategory.id}`}
-            isAvailable
+            isAvailable={menuCategory.isAvailable}
           />
         ))}
       </Box>

@@ -1,7 +1,12 @@
+import ItemCard from "@/components/ItemCard";
+import { getCompanyLocations } from "@/libs/actions";
+import LocationOn from "@mui/icons-material/LocationOn";
 import { Box, Button } from "@mui/material";
 import Link from "next/link";
 
-const LocationsPage = () => {
+const LocationsPage = async () => {
+  const locations = await getCompanyLocations();
+
   return (
     <>
       <Box
@@ -19,11 +24,17 @@ const LocationsPage = () => {
           </Button>
         </Link>
       </Box>
-      {/* <Box sx={{ mt: 5, display: "flex", flexWrap: "wrap", gap: 2 }}>
-{menus.map((menu) => (
-  <MenuCard menu={menu} key={menu.id} />
-))}
-</Box> */}
+      <Box sx={{ mt: 5, display: "flex", flexWrap: "wrap", gap: 2 }}>
+        {locations.map((location) => (
+          <ItemCard
+            key={location.id}
+            icon={<LocationOn fontSize="large" />}
+            title={location.name}
+            href={`/backoffice/locations/${location.id}`}
+            isAvailable
+          />
+        ))}
+      </Box>
     </>
   );
 };

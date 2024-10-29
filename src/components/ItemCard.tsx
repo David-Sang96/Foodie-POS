@@ -8,7 +8,7 @@ interface Props {
   icon: ReactNode;
   title: string;
   href: string;
-  isAvailable?: boolean;
+  isAvailable?: boolean | null;
   subtitle?: string;
 }
 
