@@ -1,9 +1,9 @@
-import { getCompanyLocations } from "@/libs/actions";
+import { getSelectedLocation } from "@/libs/actions";
 import Box from "@mui/material/Box";
-import LocationSignOut from "./LocationSignOut";
+import SignOutButton from "./SignOutButton";
 
 const TopBar = async () => {
-  const locations = await getCompanyLocations();
+  const selectedLocation = await getSelectedLocation();
 
   return (
     <Box
@@ -18,7 +18,8 @@ const TopBar = async () => {
       }}
     >
       <h2>Foodie POS</h2>
-      <LocationSignOut locations={locations} />
+      <h3>{selectedLocation?.locations.name}</h3>
+      <SignOutButton />
     </Box>
   );
 };

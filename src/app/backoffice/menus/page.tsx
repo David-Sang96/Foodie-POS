@@ -25,7 +25,11 @@ const MenusPage = async () => {
       </Box>
       <Box sx={{ mt: 5, display: "flex", flexWrap: "wrap", gap: 2 }}>
         {menus.map((menu) => (
-          <MenuCard menu={menu} key={menu.id} />
+          <MenuCard
+            menu={menu}
+            key={menu.id}
+            isAvailable={!menu.disabledLocationMenus.length}
+          />
         ))}
       </Box>
     </>

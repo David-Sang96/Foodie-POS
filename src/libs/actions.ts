@@ -15,7 +15,7 @@ export async function createDefaultData(nextAuthUser: User) {
       address: "Default Address",
     },
   });
-  await prisma.users.create({
+  const user = await prisma.users.create({
     data: { name: String(name), email: String(email), companyId: company.id },
   });
 
@@ -59,6 +59,10 @@ export async function createDefaultData(nextAuthUser: User) {
   await prisma.tables.create({
     data: { name: "Default Table", locationId: location.id },
   });
+
+  await prisma.selectedLocations.create({
+    data: { userId: user.id, locationId: location.id },
+  });
 }
 
 export async function getCompanyId() {
@@ -69,14 +73,22 @@ export async function getCompanyId() {
   const company = await prisma.company.findFirst({
     where: { id: dbUser?.companyId },
   });
-
   return company?.id;
+}
+
+export async function getDBUserId() {
+  const session = await getServerSession();
+  const dbUser = await prisma.users.findFirst({
+    where: { email: session?.user?.email as string },
+  });
+  return dbUser?.id;
 }
 
 export async function getCompanyMenuCategories() {
   return await prisma.menuCategories.findMany({
     orderBy: { id: "desc" },
     where: { companyId: await getCompanyId() },
+    include: { disabledLocationMenuCategories: true },
   });
 }
 
@@ -90,6 +102,7 @@ export async function getCompanyMenus() {
   return await prisma.menus.findMany({
     orderBy: { id: "desc" },
     where: { id: { in: menuIds } },
+    include: { disabledLocationMenus: true },
   });
 }
 
@@ -134,5 +147,12 @@ export async function getCompanyLocations() {
   return await prisma.locations.findMany({
     orderBy: { id: "asc" },
     where: { companyId: await getCompanyId() },
+  });
+}
+
+export async function getSelectedLocation() {
+  return await prisma.selectedLocations.findFirst({
+    where: { userId: await getDBUserId() },
+    include: { locations: true },
   });
 }

@@ -1,6 +1,11 @@
-import LocationCheckBox from "@/components/LocationCheckBox";
-import { getCompanyLocations } from "@/libs/actions";
-import { Box, Button, TextField } from "@mui/material";
+import { getSelectedLocation } from "@/libs/actions";
+import {
+  Box,
+  Button,
+  Checkbox,
+  FormControlLabel,
+  TextField,
+} from "@mui/material";
 import { deleteLocation, getLocation, updateLocation } from "../actions";
 
 interface Props {
@@ -12,7 +17,8 @@ interface Props {
 const UpdateLocationPage = async ({ params }: Props) => {
   const { id } = params;
   const location = await getLocation(Number(id));
-  const locations = await getCompanyLocations();
+  const selectedLocation = await getSelectedLocation();
+  const isSelected = Number(id) === selectedLocation?.locationId;
 
   return (
     <Box>
@@ -43,7 +49,10 @@ const UpdateLocationPage = async ({ params }: Props) => {
           name="name"
         />
         <input type="hidden" name="id" value={id} />
-        <LocationCheckBox id={id} locations={locations} />
+        <FormControlLabel
+          control={<Checkbox defaultChecked={isSelected} name="isSelected" />}
+          label="Current Location"
+        />
         <Button
           variant="contained"
           sx={{

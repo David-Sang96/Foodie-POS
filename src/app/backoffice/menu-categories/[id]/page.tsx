@@ -1,5 +1,3 @@
-"use client";
-
 import {
   Box,
   Button,
@@ -7,8 +5,6 @@ import {
   FormControlLabel,
   TextField,
 } from "@mui/material";
-import type { MenuCategories } from "@prisma/client";
-import { useEffect, useRef, useState } from "react";
 import {
   deleteMenuCategory,
   getMenuCategory,
@@ -21,32 +17,12 @@ interface Props {
   };
 }
 
-const UpdateMenuCategory = ({ params }: Props) => {
+const UpdateMenuCategory = async ({ params }: Props) => {
   const { id } = params;
-  const [menuCategory, setMenuCategory] = useState<MenuCategories>();
-  const [isAvailable, setIsAvailable] = useState<boolean | null>(null);
-  const formRef = useRef<HTMLFormElement>();
-
-  useEffect(() => {
-    handleGetMenuCategories();
-  }, []);
-
-  const handleGetMenuCategories = async () => {
-    const data = await getMenuCategory(id);
-    setMenuCategory(data);
-    setIsAvailable(data.isAvailable ?? false);
-  };
-
-  const handleUpdate = () => {
-    const fd = new FormData(formRef.current);
-    const locationId = localStorage.getItem("current_location_id") as string;
-    fd.set("locationId", locationId);
-    updateMenuCategory(fd);
-  };
-
-  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setIsAvailable(event.target.checked);
-  };
+  const menuCategory = await getMenuCategory(id);
+  const isAvailable = !menuCategory.disabledLocationMenuCategories.find(
+    (item) => item.menuCategoryId === Number(id)
+  );
 
   return (
     <>
@@ -60,7 +36,7 @@ const UpdateMenuCategory = ({ params }: Props) => {
           Delete
         </Button>
       </Box>
-      <Box sx={{ width: "40%" }} component={"form"} ref={formRef}>
+      <Box sx={{ width: "40%" }} component={"form"} action={updateMenuCategory}>
         <Box
           sx={{
             display: "flex",
@@ -76,11 +52,7 @@ const UpdateMenuCategory = ({ params }: Props) => {
           <input type="hidden" value={id} name="id" />
           <FormControlLabel
             control={
-              <Checkbox
-                checked={!!isAvailable}
-                onChange={handleCheckboxChange}
-                name="isAvailable"
-              />
+              <Checkbox defaultChecked={isAvailable} name="isAvailable" />
             }
             label="Available"
           />
@@ -91,7 +63,7 @@ const UpdateMenuCategory = ({ params }: Props) => {
               width: "fit-content",
             }}
             variant="contained"
-            onClick={handleUpdate}
+            type="submit"
           >
             Update
           </Button>

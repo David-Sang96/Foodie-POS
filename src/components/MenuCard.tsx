@@ -8,9 +8,10 @@ import Link from "next/link";
 
 interface Props {
   menu: Menus;
+  isAvailable: boolean;
 }
 
-export default function MenuCard({ menu }: Props) {
+export default async function MenuCard({ menu, isAvailable }: Props) {
   return (
     <Link
       href={`/backoffice/menus/${menu.id}`}
@@ -64,9 +65,7 @@ export default function MenuCard({ menu }: Props) {
           </Box>
           <Typography
             sx={{
-              backgroundColor: menu.isAvailable
-                ? "success.light"
-                : "error.light",
+              backgroundColor: isAvailable ? "success.light" : "error.light",
               color: "white",
               padding: "6px",
               borderRadius: "4px",
@@ -76,7 +75,7 @@ export default function MenuCard({ menu }: Props) {
             }}
             fontSize={"small"}
           >
-            {menu.isAvailable ? "Available" : "Sold Out"}
+            {isAvailable ? "Available" : "Sold Out"}
           </Typography>
         </CardContent>
       </Card>

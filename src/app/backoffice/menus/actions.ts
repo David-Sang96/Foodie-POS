@@ -1,12 +1,13 @@
 "use server";
 
+import { getSelectedLocation } from "@/libs/actions";
 import { prisma } from "@/libs/prisma";
 import { redirect } from "next/navigation";
 
 export async function getMenu(id: number) {
   const menu = await prisma.menus.findFirst({
     where: { id: Number(id) },
-    include: { menuCategoriesMenus: true },
+    include: { menuCategoriesMenus: true, disabledLocationMenus: true },
   });
 
   if (!menu) return redirect("/backoffice/menus");
@@ -16,13 +17,12 @@ export async function getMenu(id: number) {
 export async function createMenu(formData: FormData) {
   const name = formData.get("name") as string;
   const price = Number(formData.get("price"));
-  const isAvailable = !!formData.get("isAvailable");
 
   //.map(Number): This applies the Number function to each element of the array, converting them from strings to actual numbers.
   const menuCategoryIds = formData.getAll("menuCategory").map(Number);
 
   const newMenu = await prisma.menus.create({
-    data: { name, price, isAvailable },
+    data: { name, price },
   });
 
   const data = menuCategoryIds.map((menuCategoryId) => ({
@@ -38,12 +38,28 @@ export async function updateMenu(formData: FormData) {
   const menuId = Number(formData.get("id"));
   const name = formData.get("name") as string;
   const price = Number(formData.get("price"));
-  const isAvailable = !!formData.get("isAvailable");
   const menuCategoryIds = formData.getAll("menuCategory").map(Number);
+  const isAvailable = !!formData.get("isAvailable");
+
+  if (!isAvailable) {
+    const selectedLocationId = await getSelectedLocation();
+    await prisma.disabledLocationMenus.create({
+      data: { menuId, locationId: Number(selectedLocationId?.locationId) },
+    });
+  } else {
+    const disableLocationMenu = await prisma.disabledLocationMenus.findFirst({
+      where: { menuId },
+    });
+    if (disableLocationMenu) {
+      await prisma.disabledLocationMenus.delete({
+        where: { id: disableLocationMenu.id },
+      });
+    }
+  }
 
   await prisma.menus.update({
     where: { id: menuId },
-    data: { name, price, isAvailable },
+    data: { name, price },
   });
 
   const menuCategoriesMenus = await prisma.menuCategoriesMenus.findMany({
@@ -62,12 +78,10 @@ export async function updateMenu(formData: FormData) {
 
   if (!isSame) {
     await prisma.menuCategoriesMenus.deleteMany({ where: { menuId } });
-
     const data = menuCategoryIds.map((menuCategoryId) => ({
       menuId,
       menuCategoryId,
     }));
-
     await prisma.menuCategoriesMenus.createMany({ data });
   }
 

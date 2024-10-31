@@ -19,6 +19,7 @@ export default function ItemCard({
   isAvailable,
   subtitle,
 }: Props) {
+  console.log("available", isAvailable);
   return (
     <Link href={href} style={{ textDecoration: "none" }}>
       <Card

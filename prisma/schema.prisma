@@ -8,11 +8,12 @@ datasource db {
 }
 
 model Users {
-  id        Int     @id @default(autoincrement())
-  name      String
-  email     String  @unique
-  companyId Int
-  company   Company @relation(fields: [companyId], references: [id])
+  id                Int                 @id @default(autoincrement())
+  name              String
+  email             String              @unique
+  companyId         Int
+  company           Company             @relation(fields: [companyId], references: [id])
+  selectedLocations SelectedLocations[]
 }
 
 model Company {
@@ -24,25 +25,25 @@ model Company {
   locations      Locations[]
 }
 
-model Menus {
-  id                    Int                     @id @default(autoincrement())
-  name                  String
-  price                 Int?                    @default(0)
-  isAvailable           Boolean?                @default(true)
-  menuCategoriesMenus   MenuCategoriesMenus[]
-  menusAddonCategories  MenusAddonCategories[]
-  disabledLocationMenus DisabledLocationMenus[]
-}
-
 model MenuCategories {
   id                             Int                              @id @default(autoincrement())
   name                           String
-  isAvailable                    Boolean?                @default(true)
   menuCategoriesMenus            MenuCategoriesMenus[]
   disabledLocationMenuCategories DisabledLocationMenuCategories[]
   companyId                      Int
   company                        Company                          @relation(references: [id], fields: [companyId])
 }
+
+model Menus {
+  id                    Int                     @id @default(autoincrement())
+  name                  String
+  price                 Int?                    @default(0)
+  menuCategoriesMenus   MenuCategoriesMenus[]
+  menusAddonCategories  MenusAddonCategories[]
+  disabledLocationMenus DisabledLocationMenus[]
+}
+
+
 
 model MenuCategoriesMenus {
   id             Int            @id @default(autoincrement())
@@ -85,6 +86,7 @@ model Locations {
   tables                         Tables[]
   disabledLocationMenuCategories DisabledLocationMenuCategories[]
   disabledLocationMenus          DisabledLocationMenus[]
+  selectedLocations              SelectedLocations[]
 }
 
 model Tables {
@@ -94,7 +96,15 @@ model Tables {
   locations  Locations @relation(fields: [locationId], references: [id])
 }
 
-model DisabledLocationMenuCategories {
+model SelectedLocations {
+  id         Int       @id @default(autoincrement())
+  userId     Int
+  locationId Int
+  users      Users     @relation(fields: [userId], references: [id])
+  locations  Locations @relation(fields: [locationId], references: [id])
+}
+
+ model DisabledLocationMenuCategories {
   id             Int            @id @default(autoincrement())
   locationId     Int
   menuCategoryId Int

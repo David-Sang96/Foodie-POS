@@ -17,13 +17,12 @@ interface Props {
 
 const UpdateMenu = async ({ params }: Props) => {
   const { id } = params;
-
   const menu = await getMenu(Number(id));
   const menuCategories = await getCompanyMenuCategories();
-
-  const menuCategoryIds = menu.menuCategoriesMenus.map(
-    (item) => item.menuCategoryId
+  const isAvailable = !menu.disabledLocationMenus.find(
+    (item) => item.menuId === Number(id)
   );
+  const menuCategoryIds = menuCategories.map((item) => item.id);
 
   return (
     <>
@@ -81,7 +80,7 @@ const UpdateMenu = async ({ params }: Props) => {
                 key={menuCategory.id}
                 control={
                   <Checkbox
-                    defaultChecked={menuCategoryIds?.includes(menuCategory.id)}
+                    defaultChecked={menuCategoryIds.includes(menuCategory.id)}
                     name="menuCategory"
                     value={menuCategory.id}
                   />
@@ -93,9 +92,7 @@ const UpdateMenu = async ({ params }: Props) => {
         </Box>
 
         <FormControlLabel
-          control={
-            <Checkbox defaultChecked={!!menu.isAvailable} name="isAvailable" />
-          }
+          control={<Checkbox defaultChecked={isAvailable} name="isAvailable" />}
           label="Available"
         />
         <Button
