@@ -28,9 +28,9 @@ export async function updateMenuCategory(formData: FormData) {
   }
 
   if (!isAvailable) {
-    const locationId = await getSelectedLocation();
+    const location = await getSelectedLocation();
     await prisma.disabledLocationMenuCategories.create({
-      data: { menuCategoryId: id, locationId: Number(locationId?.locationId) },
+      data: { menuCategoryId: id, locationId: Number(location?.locationId) },
     });
   } else {
     const disableLocationMenuCategory =

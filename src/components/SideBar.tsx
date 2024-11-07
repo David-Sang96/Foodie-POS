@@ -102,6 +102,6 @@ const sideBarItems = [
     id: 8,
     label: "Settings",
     icon: <SettingsIcon />,
-    route: "/backoffice/settings",
+    route: "/backoffice/company",
   },
 ];

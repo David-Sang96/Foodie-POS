@@ -1,3 +1,4 @@
+import { getSelectedLocation } from "@/libs/actions";
 import {
   Box,
   Button,
@@ -20,8 +21,10 @@ interface Props {
 const UpdateMenuCategory = async ({ params }: Props) => {
   const { id } = params;
   const menuCategory = await getMenuCategory(id);
+  const selectedLocation = (await getSelectedLocation())?.locationId;
   const isAvailable = !menuCategory.disabledLocationMenuCategories.find(
-    (item) => item.menuCategoryId === Number(id)
+    (item) =>
+      item.menuCategoryId === Number(id) && item.locationId === selectedLocation
   );
 
   return (

@@ -1,10 +1,11 @@
 import MenuCard from "@/components/MenuCard";
-import { getCompanyMenus } from "@/libs/actions";
+import { getCompanyMenus, getSelectedLocation } from "@/libs/actions";
 import { Box, Button } from "@mui/material";
 import Link from "next/link";
 
 const MenusPage = async () => {
   const menus = await getCompanyMenus();
+  const selectedLocation = (await getSelectedLocation())?.locationId;
 
   return (
     <>
@@ -24,13 +25,15 @@ const MenusPage = async () => {
         </Link>
       </Box>
       <Box sx={{ mt: 5, display: "flex", flexWrap: "wrap", gap: 2 }}>
-        {menus.map((menu) => (
-          <MenuCard
-            menu={menu}
-            key={menu.id}
-            isAvailable={!menu.disabledLocationMenus.length}
-          />
-        ))}
+        {menus.map((menu) => {
+          const isAvailable = !menu.disabledLocationMenus.find(
+            (item) =>
+              item.menuId === menu.id && item.locationId === selectedLocation
+          );
+          return (
+            <MenuCard menu={menu} key={menu.id} isAvailable={isAvailable} />
+          );
+        })}
       </Box>
     </>
   );

@@ -41,14 +41,14 @@ export async function updateMenu(formData: FormData) {
   const menuCategoryIds = formData.getAll("menuCategory").map(Number);
   const isAvailable = !!formData.get("isAvailable");
 
+  const selectedLocationId = await getSelectedLocation();
   if (!isAvailable) {
-    const selectedLocationId = await getSelectedLocation();
     await prisma.disabledLocationMenus.create({
       data: { menuId, locationId: Number(selectedLocationId?.locationId) },
     });
   } else {
     const disableLocationMenu = await prisma.disabledLocationMenus.findFirst({
-      where: { menuId },
+      where: { menuId, locationId: Number(selectedLocationId?.locationId) },
     });
     if (disableLocationMenu) {
       await prisma.disabledLocationMenus.delete({

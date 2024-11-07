@@ -1,11 +1,12 @@
 import ItemCard from "@/components/ItemCard";
-import { getCompanyMenuCategories } from "@/libs/actions";
+import { getCompanyMenuCategories, getSelectedLocation } from "@/libs/actions";
 import CategoryIcon from "@mui/icons-material/Category";
 import { Box, Button } from "@mui/material";
 import Link from "next/link";
 
 const MenuCategoriesPage = async () => {
   const menuCategories = await getCompanyMenuCategories();
+  const locationId = (await getSelectedLocation())?.locationId;
 
   return (
     <>
@@ -25,15 +26,22 @@ const MenuCategoriesPage = async () => {
         </Link>
       </Box>
       <Box sx={{ mt: 5, display: "flex", flexWrap: "wrap", gap: 2 }}>
-        {menuCategories.map((menuCategory) => (
-          <ItemCard
-            title={menuCategory.name}
-            key={menuCategory.id}
-            icon={<CategoryIcon fontSize="large" />}
-            href={`/backoffice/menu-categories/${menuCategory.id}`}
-            isAvailable={!menuCategory.disabledLocationMenuCategories.length}
-          />
-        ))}
+        {menuCategories.map((menuCategory) => {
+          const isAvailable = menuCategory.disabledLocationMenuCategories.find(
+            (item) =>
+              item.menuCategoryId === menuCategory.id &&
+              item.locationId === locationId
+          );
+          return (
+            <ItemCard
+              title={menuCategory.name}
+              key={menuCategory.id}
+              icon={<CategoryIcon fontSize="large" />}
+              href={`/backoffice/menu-categories/${menuCategory.id}`}
+              isAvailable={!isAvailable}
+            />
+          );
+        })}
       </Box>
     </>
   );

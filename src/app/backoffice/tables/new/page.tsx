@@ -1,18 +1,15 @@
-"use client";
-
 import { Box, Button, TextField } from "@mui/material";
-import { useRef } from "react";
 import { createTable } from "../actions";
 
 const NewTable = () => {
-  const formRef = useRef<HTMLFormElement>();
+  // const formRef = useRef<HTMLFormElement>();
 
-  const handleCreateTable = () => {
-    const fd = new FormData(formRef.current);
-    const locationId = localStorage.getItem("current_location_id") as string;
-    fd.append("locationId", locationId);
-    createTable(fd);
-  };
+  // const handleCreateTable = () => {
+  //   const fd = new FormData(formRef.current);
+  //   const locationId = localStorage.getItem("current_location_id") as string;
+  //   fd.append("locationId", locationId);
+  //   createTable(fd);
+  // };
 
   return (
     <Box
@@ -24,7 +21,7 @@ const NewTable = () => {
         mt: 2,
       }}
       component={"form"}
-      ref={formRef}
+      action={createTable}
     >
       <TextField
         label="name"
@@ -40,7 +37,7 @@ const NewTable = () => {
           "&hover": { bgcolor: "#2d4466" },
           width: "fit-content",
         }}
-        onClick={handleCreateTable}
+        type="submit"
       >
         Create
       </Button>

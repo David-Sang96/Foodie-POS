@@ -1,8 +1,16 @@
 "use server";
 
+import { getSelectedLocation } from "@/libs/actions";
 import { prisma } from "@/libs/prisma";
 import { redirect } from "next/navigation";
 
+export async function getTables() {
+  const selectedLocationId = (await getSelectedLocation())?.locationId;
+  return await prisma.tables.findMany({
+    where: { locationId: selectedLocationId },
+    orderBy: { id: "asc" },
+  });
+}
 export async function getTable(id: number) {
   const table = await prisma.tables.findFirst({ where: { id } });
   if (!table) return redirect("/backoffice/tables");
@@ -12,7 +20,7 @@ export async function getTable(id: number) {
 
 export async function createTable(formData: FormData) {
   const name = formData.get("name") as string;
-  const locationId = formData.get("locationId");
+  const locationId = (await getSelectedLocation())?.locationId;
 
   await prisma.tables.create({
     data: { name, locationId: Number(locationId) },

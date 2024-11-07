@@ -1,27 +1,24 @@
-"use client";
-
 import ItemCard from "@/components/ItemCard";
-import { getLocationTables } from "@/libs/actions";
 import TableBarIcon from "@mui/icons-material/TableBar";
 import { Box, Button } from "@mui/material";
-import type { Tables } from "@prisma/client";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { getTables } from "./actions";
 
-const TablesPage = () => {
-  const [tables, setTables] = useState<Tables[]>();
+const TablesPage = async () => {
+  // const [tables, setTables] = useState<Tables[]>();
 
-  const getTables = async () => {
-    const currentLocationId = localStorage.getItem(
-      "current_location_id"
-    ) as string;
-    const data = await getLocationTables(Number(currentLocationId));
-    setTables(data);
-  };
+  // const getTables = async () => {
+  //   const currentLocationId = localStorage.getItem(
+  //     "current_location_id"
+  //   ) as string;
+  //   const data = await getLocationTables(Number(currentLocationId));
+  //   setTables(data);
+  // };
 
-  useEffect(() => {
-    getTables();
-  }, []);
+  // useEffect(() => {
+  //   getTables();
+  // }, []);
+  const tables = await getTables();
 
   return (
     <>

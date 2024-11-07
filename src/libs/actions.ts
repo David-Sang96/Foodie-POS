@@ -13,6 +13,10 @@ export async function createDefaultData(nextAuthUser: User) {
     data: {
       name: "Default Company",
       address: "Default Address",
+      city: "Default City",
+      country: "Default Country",
+      zipCode: "0000",
+      callingCode: "+60",
     },
   });
   const user = await prisma.users.create({
