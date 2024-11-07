@@ -1,3 +1,4 @@
+import QrImage from "@/components/QrImage";
 import { Box, Button, TextField } from "@mui/material";
 import { deleteTable, getTable, updateTable } from "../actions";
 
@@ -52,6 +53,7 @@ const UpdateTable = async ({ params }: Props) => {
         >
           update
         </Button>
+        <QrImage qrImageUrl={table.qrCodeImageUrl} />
       </Box>
     </Box>
   );

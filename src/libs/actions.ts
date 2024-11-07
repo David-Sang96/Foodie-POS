@@ -1,5 +1,6 @@
 "use server";
 
+import { generateQRImage } from "@/app/backoffice/tables/actions";
 import { getServerSession, User } from "next-auth";
 import { prisma } from "./prisma";
 
@@ -60,8 +61,17 @@ export async function createDefaultData(nextAuthUser: User) {
     data: { name: "Default Location", companyId: company.id },
   });
 
-  await prisma.tables.create({
-    data: { name: "Default Table", locationId: location.id },
+  const table = await prisma.tables.create({
+    data: {
+      name: "Default Table",
+      locationId: location.id,
+      qrCodeImageUrl: "",
+    },
+  });
+  const qrCodeImageUrl = await generateQRImage(table);
+  await prisma.tables.update({
+    where: { id: table.id },
+    data: { ...table, qrCodeImageUrl },
   });
 
   await prisma.selectedLocations.create({

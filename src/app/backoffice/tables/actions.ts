@@ -1,8 +1,12 @@
 "use server";
 
+import { config } from "@/config";
 import { getSelectedLocation } from "@/libs/actions";
 import { prisma } from "@/libs/prisma";
+import type { Tables } from "@prisma/client";
+import { put } from "@vercel/blob";
 import { redirect } from "next/navigation";
+import QRCode from "qrcode";
 
 export async function getTables() {
   const selectedLocationId = (await getSelectedLocation())?.locationId;
@@ -22,8 +26,14 @@ export async function createTable(formData: FormData) {
   const name = formData.get("name") as string;
   const locationId = (await getSelectedLocation())?.locationId;
 
-  await prisma.tables.create({
-    data: { name, locationId: Number(locationId) },
+  const table = await prisma.tables.create({
+    data: { name, locationId: Number(locationId), qrCodeImageUrl: "" },
+  });
+
+  const qrCodeImageUrl = await generateQRImage(table);
+  await prisma.tables.update({
+    where: { id: table.id },
+    data: { ...table, qrCodeImageUrl },
   });
 
   redirect("/backoffice/tables");
@@ -43,3 +53,16 @@ export async function deleteTable(formData: FormData) {
 
   redirect("/backoffice/tables");
 }
+
+export const generateQRImage = async (table: Tables) => {
+  const orderAppUrl = `${config.orderAppUrl}?tableId=${table.id}`;
+  const generateQRImage = await QRCode.toBuffer(orderAppUrl, { scale: 7 });
+  const { url } = await put(
+    `foodie-pos/table-${table.id}.png`,
+    generateQRImage,
+    {
+      access: "public",
+    }
+  );
+  return url;
+};
