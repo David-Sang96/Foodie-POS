@@ -15,7 +15,7 @@ export default async function MenuCard({ menu, isAvailable }: Props) {
   return (
     <Link
       href={`/backoffice/menus/${menu.id}`}
-      style={{ textDecoration: "none", width: 270 }}
+      style={{ textDecoration: "none", width: 240 }}
     >
       <Card
         sx={{
@@ -30,11 +30,14 @@ export default async function MenuCard({ menu, isAvailable }: Props) {
       >
         <CardMedia
           sx={{
-            height: 130,
+            height: 150,
             width: "100%",
             borderRadius: "5px 5px 0 0", // Rounded corners on top
           }}
-          image="/burger.jpeg"
+          image={
+            menu.imageUrl ||
+            "https://cdn.pixabay.com/photo/2024/02/23/08/27/apple-8591539_1280.jpg"
+          }
           title="Menu Image"
         />
         <CardContent>

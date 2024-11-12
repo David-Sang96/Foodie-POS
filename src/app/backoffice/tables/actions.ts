@@ -49,7 +49,7 @@ export async function updateTable(formData: FormData) {
 
 export async function deleteTable(formData: FormData) {
   const id = Number(formData.get("id"));
-  await prisma.tables.delete({ where: { id } });
+  await prisma.tables.update({ where: { id }, data: { isArchived: true } });
 
   redirect("/backoffice/tables");
 }

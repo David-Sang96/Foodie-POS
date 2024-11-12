@@ -2,11 +2,28 @@
 
 import { getCompanyId, getSelectedLocation } from "@/libs/actions";
 import { prisma } from "@/libs/prisma";
+import { menuCategoryFormSchema } from "@/libs/zodSchemas";
 import { redirect } from "next/navigation";
+import { z } from "zod";
+
+interface updateTypes {
+  id: number;
+  isAvailable: boolean;
+  name: string;
+}
+
+const CreateMenuCategoryValidator = menuCategoryFormSchema.omit({
+  id: true,
+  isAvailable: true,
+});
+const UpdateMenuCategoryValidator = menuCategoryFormSchema.omit({
+  companyId: true,
+});
+const DeleteMenuCategoryValidator = menuCategoryFormSchema.pick({ id: true });
 
 export async function getMenuCategory(id: string) {
   const menuCategory = await prisma.menuCategories.findFirst({
-    where: { id: Number(id) },
+    where: { id: Number(id), isArchived: false },
     include: { disabledLocationMenuCategories: true },
   });
 
@@ -14,62 +31,100 @@ export async function getMenuCategory(id: string) {
   return menuCategory;
 }
 
-export async function updateMenuCategory(formData: FormData) {
-  const id = Number(formData.get("id"));
-  const isAvailable = !!formData.get("isAvailable");
-  const name = formData.get("name") as string;
-
-  if (!id) {
-    throw new Error("Invalid menu category id");
-  }
-
-  if (!name) {
-    throw new Error("Invalid menu category name");
-  }
-
-  if (!isAvailable) {
-    const location = await getSelectedLocation();
-    await prisma.disabledLocationMenuCategories.create({
-      data: { menuCategoryId: id, locationId: Number(location?.locationId) },
+export async function updateMenuCategory({
+  name: menuCategoryName,
+  id,
+  isAvailable: isValid,
+}: updateTypes) {
+  try {
+    const {
+      name,
+      isAvailable,
+      id: menuCategoryId,
+    } = UpdateMenuCategoryValidator.parse({
+      name: menuCategoryName,
+      isAvailable: isValid,
+      id,
     });
-  } else {
-    const disableLocationMenuCategory =
-      await prisma.disabledLocationMenuCategories.findFirst({
-        where: { menuCategoryId: id },
+
+    const location = await getSelectedLocation();
+    if (!isAvailable) {
+      await prisma.disabledLocationMenuCategories.create({
+        data: { menuCategoryId, locationId: Number(location?.locationId) },
       });
-    if (disableLocationMenuCategory) {
-      await prisma.disabledLocationMenuCategories.delete({
-        where: { id: disableLocationMenuCategory.id },
+    } else {
+      const disableLocationMenuCategory =
+        await prisma.disabledLocationMenuCategories.findFirst({
+          where: { menuCategoryId, locationId: Number(location?.locationId) },
+        });
+      if (disableLocationMenuCategory) {
+        await prisma.disabledLocationMenuCategories.delete({
+          where: { id: disableLocationMenuCategory.id },
+        });
+      }
+    }
+
+    const updatedMenuCategory = await prisma.menuCategories.update({
+      data: { name },
+      where: { id: menuCategoryId },
+    });
+
+    return { error: null, updatedMenuCategory };
+  } catch (error) {
+    let errorMessages = "";
+    if (error instanceof z.ZodError) {
+      error.errors.forEach((err) => {
+        errorMessages = errorMessages + err.message + ". " + "\n";
       });
+      return { error: errorMessages };
+    } else {
+      console.error("Unexpected error:", error);
+      return { error: "Something went wrong.Please contact our support." };
     }
   }
-
-  await prisma.menuCategories.update({
-    data: { name },
-    where: { id },
-  });
-  redirect("/backoffice/menu-categories");
 }
 
-export async function createMenuCategory(formData: FormData) {
-  const name = formData.get("name") as string;
-  const companyId = (await getCompanyId()) as number;
-
-  if (!name) {
-    throw new Error("Invalid menu category name.");
+export async function createMenuCategory(menuCategoryName: string) {
+  try {
+    const { name, companyId } = CreateMenuCategoryValidator.parse({
+      name: menuCategoryName,
+      companyId: Number(await getCompanyId()),
+    });
+    const newMenuCategory = await prisma.menuCategories.create({
+      data: { name, companyId },
+    });
+    return { newMenuCategory };
+  } catch (error) {
+    let errorMessages = "";
+    if (error instanceof z.ZodError) {
+      error.errors.forEach((err) => {
+        errorMessages = errorMessages + err.message + ". " + "\n";
+      });
+      return { error: errorMessages };
+    } else {
+      console.error("Unexpected error:", error);
+      return { error: "Something went wrong.Please contact our support." };
+    }
   }
-
-  await prisma.menuCategories.create({ data: { name, companyId } });
-  redirect("/backoffice/menu-categories");
 }
 
-export async function deleteMenuCategory(formData: FormData) {
-  const id = formData.get("id") as string;
-
-  if (!id) {
-    throw new Error("Invalid menu category id");
+export async function deleteMenuCategory(menuCategoryId: number) {
+  try {
+    const { id } = DeleteMenuCategoryValidator.parse({
+      id: menuCategoryId,
+    });
+    await prisma.menuCategories.update({
+      where: { id },
+      data: { isArchived: true },
+    });
+    return { error: null };
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      const errorMessage = error.errors[0].message;
+      return { error: errorMessage };
+    } else {
+      console.error("Unexpected error:", error);
+      return { error: "Something went wrong.Please contact our support." };
+    }
   }
-
-  await prisma.menuCategories.delete({ where: { id: Number(id) } });
-  redirect("/backoffice/menu-categories");
 }

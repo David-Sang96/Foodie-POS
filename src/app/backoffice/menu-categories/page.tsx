@@ -30,7 +30,8 @@ const MenuCategoriesPage = async () => {
           const isAvailable = menuCategory.disabledLocationMenuCategories.find(
             (item) =>
               item.menuCategoryId === menuCategory.id &&
-              item.locationId === locationId
+              item.locationId === locationId &&
+              item.isArchived === false
           );
           return (
             <ItemCard

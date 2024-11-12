@@ -28,6 +28,7 @@ const NewTable = () => {
         variant="outlined"
         defaultValue={""}
         name="name"
+        autoFocus
       />
 
       <Button

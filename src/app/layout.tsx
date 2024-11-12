@@ -32,8 +32,9 @@ export default function RootLayout({
               duration: 3000,
             },
             error: {
-              duration: 3000,
+              duration: 6000,
             },
+            position: "top-right",
           }}
         />
         {children}
