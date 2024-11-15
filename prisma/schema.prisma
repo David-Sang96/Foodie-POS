@@ -55,6 +55,7 @@ model Menus {
   menuCategoriesMenus   MenuCategoriesMenus[]
   menusAddonCategories  MenusAddonCategories[]
   disabledLocationMenus DisabledLocationMenus[]
+  orders                Orders[]
   isArchived            Boolean                 @default(false)
   createdAt             DateTime                @default(now())
   updatedAt             DateTime                @updatedAt
@@ -100,6 +101,7 @@ model Addons {
   addonCategoryId Int
   isAvailable     Boolean         @default(true)
   addonCategory   AddonCategories @relation(fields: [addonCategoryId], references: [id])
+  orders          Orders[]
   isArchived      Boolean         @default(false)
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
@@ -125,6 +127,7 @@ model Tables {
   locationId     Int
   qrCodeImageUrl String
   locations      Locations @relation(fields: [locationId], references: [id])
+  orders         Orders[]
   isArchived     Boolean   @default(false)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
@@ -161,4 +164,28 @@ model DisabledLocationMenus {
   isArchived Boolean   @default(false)
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
+}
+
+model Orders {
+  id         Int         @id @default(autoincrement())
+  menuId     Int
+  addonId    Int?
+  quantity   Int
+  orderSeq   String
+  itemId     String
+  status     ORDERSTATUS
+  totalPrice Int
+  tableId    Int
+  isArchived Boolean     @default(false)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  menus      Menus       @relation(fields: [menuId], references: [id])
+  addons     Addons?      @relation(fields: [addonId], references: [id])
+  tables     Tables      @relation(fields: [tableId], references: [id])
+}
+
+enum ORDERSTATUS {
+  PENDING
+  COOKING
+  COMPLETE
 }

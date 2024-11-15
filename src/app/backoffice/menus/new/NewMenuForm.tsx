@@ -26,28 +26,24 @@ const NewMenuForm = ({ menuCategories }: Props) => {
   const router = useRouter();
 
   const clientAction = async (formData: FormData) => {
-    try {
-      setIsLoading(true);
-      const file = formData.get("file") as File;
-      if (file && file.size) {
-        const { url } = await upload(file.name, file, {
-          access: "public",
-          handleUploadUrl: "/api/upload",
-        });
-        formData.set("imageUrl", url);
-      }
-      const response = await createMenuClient(formData);
-      if (response.error) {
-        toast.error(response.error);
-      } else {
-        toast.success("Menu Created Successfully");
-        router.push("/backoffice/menus");
-        router.refresh();
-      }
-      setIsLoading(false);
-    } catch (error) {
-      setIsLoading(false);
+    setIsLoading(true);
+    const file = formData.get("file") as File;
+    if (file && file.size) {
+      const { url } = await upload(file.name, file, {
+        access: "public",
+        handleUploadUrl: "/api/upload",
+      });
+      formData.set("imageUrl", url);
     }
+    const response = await createMenuClient(formData);
+    if (response.errors) {
+      response.errors.forEach((item) => toast.error(item.message));
+    } else {
+      toast.success("Menu Created Successfully");
+      router.push("/backoffice/menus");
+      router.refresh();
+    }
+    setIsLoading(false);
   };
 
   return (

@@ -1,7 +1,5 @@
 "use client";
 
-import { menuFormSchema } from "@/libs/zodSchemas";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Box,
   Button,
@@ -11,11 +9,11 @@ import {
   Typography,
 } from "@mui/material";
 import type { MenuCategories, Menus } from "@prisma/client";
+import { upload } from "@vercel/blob/client";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { useForm, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
-import { z } from "zod";
 import { updateMenu } from "../actions";
 
 interface Props {
@@ -26,13 +24,6 @@ interface Props {
   menuCategoryIds: number[];
 }
 
-const updateMenuData = menuFormSchema.omit({
-  imageUrl: true,
-  id: true,
-});
-
-type FormFields = z.infer<typeof updateMenuData>;
-
 const MenuUpdateForm = ({
   menu,
   menuCategories,
@@ -40,47 +31,28 @@ const MenuUpdateForm = ({
   id,
   menuCategoryIds,
 }: Props) => {
-  const [selectedIds, setSelectedIds] = useState<number[]>(menuCategoryIds);
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    setError,
-  } = useForm<FormFields>({
-    resolver: zodResolver(updateMenuData),
-    defaultValues: {
-      menuCategoryIds,
-    },
-  });
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const router = useRouter();
 
-  const onSubmit: SubmitHandler<FormFields> = async (data) => {
-    const { name, isAvailable, price } = data;
-    const response = await updateMenu({
-      menuId: Number(id),
-      menuPrice: price,
-      isAvailable,
-      menuName: name,
-      menuCategoryIds: selectedIds,
-    });
-    if (!response.error) {
+  const handleSubmit = async (formData: FormData) => {
+    setIsSubmitting(true);
+    const file = formData.get("file") as File;
+    if (file && file.size) {
+      const { url } = await upload(file.name, file, {
+        access: "public",
+        handleUploadUrl: "/api/upload",
+      });
+      formData.set("imageUrl", url);
+    }
+    const response = await updateMenu(formData);
+    if (response?.error) {
+      response.error.forEach((item) => toast.error(item.message));
+    } else {
       toast.success("Updated Successfully");
       router.push("/backoffice/menus");
       router.refresh();
-    } else {
-      toast.error(response.error);
     }
-    setError("root", {
-      message: "Something went wrong in form",
-    });
-  };
-
-  const onChangeHandler = (id: number) => {
-    setSelectedIds((prev) =>
-      prev.includes(id)
-        ? prev.filter((selectedId) => selectedId !== id)
-        : [...prev, id]
-    );
+    setIsSubmitting(false);
   };
 
   return (
@@ -93,22 +65,22 @@ const MenuUpdateForm = ({
         width: "40%",
       }}
       component={"form"}
-      onSubmit={handleSubmit(onSubmit)}
+      action={handleSubmit}
     >
       <TextField
         label="name"
         variant="outlined"
         defaultValue={menu.name}
-        {...register("name")}
+        name="name"
       />
-      {errors.name && <Box sx={{ color: "red" }}>{errors.name.message}</Box>}
       <TextField
         label="price"
         variant="outlined"
         defaultValue={menu.price}
-        {...register("price", { valueAsNumber: true })}
+        name="price"
+        type="number"
       />
-      {errors.price && <Box sx={{ color: "red" }}>{errors.price?.message}</Box>}
+      <input type="hidden" name="id" value={id} />
       <Box>
         <Typography sx={{ my: 1, fontWeight: "bold" }}>
           MenuCategories
@@ -128,24 +100,31 @@ const MenuUpdateForm = ({
               key={menuCategory.id}
               control={
                 <Checkbox
-                  checked={selectedIds.includes(menuCategory.id)}
-                  onChange={() => onChangeHandler(menuCategory.id)}
+                  defaultChecked={menuCategoryIds.includes(menuCategory.id)}
                   value={menuCategory.id}
+                  name="menuCategoryIds"
                 />
               }
               label={menuCategory.name}
             />
           ))}
         </Box>
-        {errors.menuCategoryIds && (
-          <Box sx={{ color: "red" }}>{errors.menuCategoryIds.message}</Box>
-        )}
       </Box>
+      <Image
+        src={menu.imageUrl || ""}
+        alt="menu image"
+        width={200}
+        height={200}
+        style={{ margin: "auto", marginBlock: "10px" }}
+      />
+      <TextField
+        type="file"
+        name="file"
+        inputProps={{ accept: "image/jpeg, image/png, image/webp" }}
+      />
 
       <FormControlLabel
-        control={
-          <Checkbox defaultChecked={isAvailable} {...register("isAvailable")} />
-        }
+        control={<Checkbox defaultChecked={isAvailable} name="isAvailable" />}
         label="Available"
       />
       <Button
@@ -160,7 +139,6 @@ const MenuUpdateForm = ({
       >
         {isSubmitting ? "Updating..." : "Update"}
       </Button>
-      {errors.name && <Box sx={{ color: "red" }}>{errors.root?.message}</Box>}
     </Box>
   );
 };

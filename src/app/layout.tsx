@@ -32,7 +32,7 @@ export default function RootLayout({
               duration: 3000,
             },
             error: {
-              duration: 6000,
+              duration: 4000,
             },
             position: "top-right",
           }}

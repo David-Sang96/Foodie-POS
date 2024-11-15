@@ -176,3 +176,39 @@ export async function getSelectedLocation() {
     include: { locations: true },
   });
 }
+
+export async function getCompanyByTableId(tableId: string) {
+  const table = await prisma.tables.findFirst({
+    where: { id: Number(tableId), isArchived: false },
+  });
+  const location = await prisma.locations.findFirst({
+    where: { id: table?.locationId, isArchived: false },
+  });
+  return await prisma.company.findFirst({
+    where: { id: location?.companyId, isArchived: false },
+  });
+}
+
+export async function getMenuCategoriesByTableId(tableId: string) {
+  const company = await getCompanyByTableId(tableId);
+  const menuCategories = await prisma.menuCategories.findMany({
+    where: { companyId: company?.id, isArchived: false },
+  });
+  const table = await prisma.tables.findFirst({
+    where: { id: Number(tableId), isArchived: false },
+  });
+  const location = await prisma.locations.findFirst({
+    where: { id: table?.locationId, isArchived: false },
+  });
+  const disabledLocations =
+    await prisma.disabledLocationMenuCategories.findMany({
+      where: { locationId: location?.id, isArchived: false },
+    });
+
+  const disabledLocationIds = disabledLocations.map(
+    (item) => item.menuCategoryId
+  );
+  return menuCategories.filter(
+    (item) => !disabledLocationIds.includes(item.id)
+  );
+}

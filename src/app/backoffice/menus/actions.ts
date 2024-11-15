@@ -7,19 +7,11 @@ import { put } from "@vercel/blob";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
-interface UpdateMenuTypes {
-  menuId: number;
-  menuName: string;
-  menuPrice: number;
-  isAvailable: boolean;
-  menuCategoryIds: number[];
-}
-
 const CreateMenuValidator = menuFormSchema.omit({
   id: true,
   isAvailable: true,
 });
-const updateMenuValidator = menuFormSchema.omit({ imageUrl: true });
+
 const DeleteMenuValidator = menuFormSchema.pick({ id: true });
 
 export async function getMenu(id: number) {
@@ -104,35 +96,30 @@ export async function createMenuClient(formData: FormData) {
     await prisma.menuCategoriesMenus.createMany({ data });
 
     return { error: null, newMenu };
-  } catch (error) {
-    let errorMessages = "";
-    if (error instanceof z.ZodError) {
-      error.errors.forEach((err) => {
-        return (errorMessages = errorMessages + err.message + ". " + "\n");
-      });
-      return { error: errorMessages };
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      return { errors: err.errors };
     } else {
-      console.error("Unexpected error:", error);
-      return { error: "Something went wrong.Please contact our support." };
+      console.error("Unexpected error:", err);
+      return {
+        errors: [
+          { message: "Something went wrong.Please contact our support." },
+        ],
+      };
     }
   }
 }
 
-export async function updateMenu({
-  menuId,
-  menuName,
-  menuPrice,
-  menuCategoryIds: ids,
-  isAvailable: isValid,
-}: UpdateMenuTypes) {
+export async function updateMenu(formData: FormData) {
   try {
-    const { id, name, price, isAvailable, menuCategoryIds } =
-      updateMenuValidator.parse({
-        id: menuId,
-        price: menuPrice,
-        name: menuName,
-        isAvailable: isValid,
-        menuCategoryIds: ids,
+    const { id, name, price, isAvailable, menuCategoryIds, imageUrl } =
+      menuFormSchema.parse({
+        id: Number(formData.get("id")),
+        price: Number(formData.get("price")),
+        name: formData.get("name"),
+        isAvailable: !!formData.get("isAvailable"),
+        menuCategoryIds: formData.getAll("menuCategoryIds").map(Number),
+        imageUrl: formData.get("imageUrl"),
       });
 
     const selectedLocationId = await getSelectedLocation();
@@ -156,9 +143,11 @@ export async function updateMenu({
         });
       }
     }
+
+    const menu = await prisma.menus.findFirst({ where: { id } });
     await prisma.menus.update({
       where: { id },
-      data: { name, price },
+      data: { name, price, imageUrl: imageUrl ? imageUrl : menu?.imageUrl },
     });
 
     const menuCategoriesMenus = await prisma.menuCategoriesMenus.findMany({
@@ -181,17 +170,16 @@ export async function updateMenu({
       }));
       await prisma.menuCategoriesMenus.createMany({ data });
     }
-    return { error: null };
   } catch (error) {
-    let errorMessages = "";
     if (error instanceof z.ZodError) {
-      error.errors.forEach((err) => {
-        return (errorMessages += err.message + ". " + "\n");
-      });
-      return { error: errorMessages };
+      return { error: error.errors };
     } else {
       console.error("Unexpected error:", error);
-      return { error: "Something went wrong.Please contact our support." };
+      return {
+        error: [
+          { message: "Something went wrong.Please contact our support." },
+        ],
+      };
     }
   }
 }
@@ -206,8 +194,6 @@ export async function deleteMenu(menuId: number) {
     });
     await prisma.menusAddonCategories.deleteMany({ where: { menuId: id } });
     await prisma.menus.update({ where: { id }, data: { isArchived: true } });
-
-    return { error: null };
   } catch (error) {
     if (error instanceof z.ZodError) {
       const errorMessage = error.errors[0].message;

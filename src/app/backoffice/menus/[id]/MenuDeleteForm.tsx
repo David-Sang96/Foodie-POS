@@ -18,7 +18,7 @@ const MenuDeleteForm = ({ id }: Props) => {
     e.preventDefault();
     setLoading(true);
     const response = await deleteMenu(Number(id));
-    if (!response.error) {
+    if (!response?.error) {
       toast.success("Deleted Successfully");
       router.push("/backoffice/menus");
       router.refresh();

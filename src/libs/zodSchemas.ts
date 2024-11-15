@@ -38,15 +38,19 @@ export const menuCategoryFormSchema = z.object({
 });
 
 export const menuFormSchema = z.object({
-  id: z.number({ message: "Required field id is missing" }),
+  id: z
+    .number({ message: "Required field id is missing" })
+    .gt(0, { message: "Id cannot be zero" }),
   name: z
     .string()
     .trim()
     .min(5, { message: "Name must be at least 5 characters long" }),
   price: z
     .number()
-    .min(1, { message: "Price must be at least 1" })
-    .nonnegative({ message: "Price must be a positive number" }),
+    // .nonnegative({ message: "Price must be positive number" })
+    .refine((n) => n > 0, {
+      message: "Price is required and must be positive number",
+    }),
   isAvailable: z.boolean(),
   menuCategoryIds: z
     .array(z.number())

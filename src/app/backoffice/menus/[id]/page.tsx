@@ -12,9 +12,9 @@ interface Props {
 
 const UpdateMenu = async ({ params }: Props) => {
   const { id } = params;
+  const menuCategories = await getCompanyMenuCategories();
   const menu = await getMenu(Number(id));
   const selectedLocation = (await getSelectedLocation())?.locationId;
-  const menuCategories = await getCompanyMenuCategories();
   const isAvailable = !menu.disabledLocationMenus.find(
     (item) => item.menuId === Number(id) && item.locationId === selectedLocation
   );
