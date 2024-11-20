@@ -14,18 +14,18 @@ import { MenuCategories } from "@prisma/client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { createMenu } from "../actions";
+import { createMenuServer } from "../actions";
 
 interface Props {
   menuCategories: MenuCategories[];
 }
 
 const NewMenuForm = ({ menuCategories }: Props) => {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading] = useState<boolean>(true);
   const router = useRouter();
 
   const clientAction = async (formData: FormData) => {
-    const response = await createMenu(formData);
+    const response = await createMenuServer(formData);
     if (response.error) {
       toast.error(response.error);
     } else {

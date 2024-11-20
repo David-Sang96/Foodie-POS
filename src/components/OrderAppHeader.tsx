@@ -4,14 +4,15 @@ import Image from "next/image";
 
 interface Props {
   company: Company;
+  headerMenuImageUrl?: string;
 }
 
-const OrderAppHeader = ({ company }: Props) => {
+const OrderAppHeader = ({ company, headerMenuImageUrl }: Props) => {
   return (
     <Box sx={{ position: "relative" }}>
       <Box
         sx={{
-          bgcolor: "#189c85",
+          bgcolor: "#457b9d",
           height: 60,
           px: 2,
           display: { xs: "flex", md: "none" },
@@ -20,9 +21,22 @@ const OrderAppHeader = ({ company }: Props) => {
           boxSizing: "border-box",
         }}
       >
-        <Typography variant="h5" sx={{ fontWeight: "bold", color: "#f1faee" }}>
+        <Typography
+          variant="h5"
+          sx={{ fontWeight: "bold", color: "#f1faee", textAlign: "start" }}
+        >
           {company.name}
         </Typography>
+
+        {headerMenuImageUrl && (
+          <Image
+            src={headerMenuImageUrl}
+            alt="menu image"
+            width={150}
+            height={150}
+            style={{ borderRadius: "50%", marginTop: 100 }}
+          />
+        )}
       </Box>
       <Box
         sx={{
@@ -42,25 +56,35 @@ const OrderAppHeader = ({ company }: Props) => {
         />
         <Box sx={{ position: "absolute" }}>
           <Box sx={{ textAlign: "center" }}>
-            <Typography
-              variant="h4"
-              sx={{ fontWeight: "bold", color: "#f1faee", mt: 4 }}
-            >
-              {company.name}
-            </Typography>
-          </Box>
-          <Box sx={{ textAlign: "center" }}>
-            <Typography
-              sx={{
-                fontWeight: "bold",
-                color: "#f1faee",
-                mt: 1,
-                opacity: 0.6,
-                fontStyle: "italic",
-              }}
-            >
-              {company.name}
-            </Typography>
+            {!headerMenuImageUrl ? (
+              <>
+                <Typography
+                  variant="h4"
+                  sx={{ fontWeight: "bold", color: "#f1faee", mt: 4 }}
+                >
+                  {company.name}
+                </Typography>
+                <Typography
+                  sx={{
+                    fontWeight: "bold",
+                    color: "#f1faee",
+                    mt: 1,
+                    opacity: 0.6,
+                    fontStyle: "italic",
+                  }}
+                >
+                  {company.name}
+                </Typography>
+              </>
+            ) : (
+              <Image
+                src={headerMenuImageUrl}
+                alt="menu image"
+                width={150}
+                height={150}
+                style={{ borderRadius: "50%", marginTop: 12 }}
+              />
+            )}
           </Box>
         </Box>
       </Box>

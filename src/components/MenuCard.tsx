@@ -8,15 +8,19 @@ import Link from "next/link";
 
 interface Props {
   menu: Menus;
-  isAvailable: boolean;
+  isAvailable?: boolean;
+  showIsAvailable?: boolean;
+  relatedUrl: string;
 }
 
-export default async function MenuCard({ menu, isAvailable }: Props) {
+export default function MenuCard({
+  menu,
+  isAvailable,
+  relatedUrl,
+  showIsAvailable,
+}: Props) {
   return (
-    <Link
-      href={`/backoffice/menus/${menu.id}`}
-      style={{ textDecoration: "none", width: 240 }}
-    >
+    <Link href={relatedUrl} style={{ textDecoration: "none", width: 240 }}>
       <Card
         sx={{
           transition: "transform 0.3s ease, box-shadow 0.3s ease",
@@ -66,20 +70,22 @@ export default async function MenuCard({ menu, isAvailable }: Props) {
               RM {menu.price}
             </Typography>
           </Box>
-          <Typography
-            sx={{
-              backgroundColor: isAvailable ? "success.light" : "error.light",
-              color: "white",
-              padding: "6px",
-              borderRadius: "4px",
-              textAlign: "center",
-              fontWeight: "medium",
-              width: "50%",
-            }}
-            fontSize={"small"}
-          >
-            {isAvailable ? "Available" : "Sold Out"}
-          </Typography>
+          {showIsAvailable && (
+            <Typography
+              sx={{
+                backgroundColor: isAvailable ? "success.light" : "error.light",
+                color: "white",
+                padding: "6px",
+                borderRadius: "4px",
+                textAlign: "center",
+                fontWeight: "medium",
+                width: "50%",
+              }}
+              fontSize={"small"}
+            >
+              {isAvailable ? "Available" : "Sold Out"}
+            </Typography>
+          )}
         </CardContent>
       </Card>
     </Link>

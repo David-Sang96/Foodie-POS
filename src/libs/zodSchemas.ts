@@ -55,5 +55,8 @@ export const menuFormSchema = z.object({
   menuCategoryIds: z
     .array(z.number())
     .min(1, { message: "Please select at least one menu category" }),
+  addonCategoryIds: z
+    .array(z.number())
+    .min(1, { message: "Please select at least one addon category" }),
   imageUrl: z.string().nullable(),
 });

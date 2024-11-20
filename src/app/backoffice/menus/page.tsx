@@ -31,7 +31,13 @@ const MenusPage = async () => {
               item.menuId === menu.id && item.locationId === selectedLocation
           );
           return (
-            <MenuCard menu={menu} key={menu.id} isAvailable={isAvailable} />
+            <MenuCard
+              menu={menu}
+              key={menu.id}
+              isAvailable={isAvailable}
+              showIsAvailable
+              relatedUrl={`/backoffice/menus/${menu.id}`}
+            />
           );
         })}
       </Box>

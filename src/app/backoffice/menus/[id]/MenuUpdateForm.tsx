@@ -8,7 +8,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import type { MenuCategories, Menus } from "@prisma/client";
+import type { AddonCategories, MenuCategories, Menus } from "@prisma/client";
 import { upload } from "@vercel/blob/client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -20,16 +20,20 @@ interface Props {
   id: string;
   menu: Menus;
   menuCategories: MenuCategories[];
+  selectedMenuCategoryIds: number[];
+  addonCategories: AddonCategories[];
+  selectedAddonCategoryIds: number[];
   isAvailable: boolean;
-  menuCategoryIds: number[];
 }
 
 const MenuUpdateForm = ({
+  id,
   menu,
   menuCategories,
+  selectedMenuCategoryIds,
+  addonCategories,
+  selectedAddonCategoryIds,
   isAvailable,
-  id,
-  menuCategoryIds,
 }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const router = useRouter();
@@ -100,12 +104,45 @@ const MenuUpdateForm = ({
               key={menuCategory.id}
               control={
                 <Checkbox
-                  defaultChecked={menuCategoryIds.includes(menuCategory.id)}
+                  defaultChecked={selectedMenuCategoryIds.includes(
+                    menuCategory.id
+                  )}
                   value={menuCategory.id}
                   name="menuCategoryIds"
                 />
               }
               label={menuCategory.name}
+            />
+          ))}
+        </Box>
+      </Box>
+      <Box>
+        <Typography sx={{ my: 1, fontWeight: "bold" }}>
+          AddonCategories
+        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            border: " 1px solid lightgray",
+            px: 2,
+            py: 0.5,
+            borderRadius: 1,
+          }}
+        >
+          {addonCategories.map((addonCategory) => (
+            <FormControlLabel
+              key={addonCategory.id}
+              control={
+                <Checkbox
+                  defaultChecked={selectedAddonCategoryIds.includes(
+                    addonCategory.id
+                  )}
+                  value={addonCategory.id}
+                  name="addonCategoryIds"
+                />
+              }
+              label={addonCategory.name}
             />
           ))}
         </Box>
