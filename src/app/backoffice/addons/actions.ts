@@ -4,7 +4,7 @@ import { prisma } from "@/libs/prisma";
 import { redirect } from "next/navigation";
 
 export async function getAddon(id: number) {
-  const addon = await prisma.addons.findFirst({ where: { id } });
+  const addon = await prisma.addons.findUnique({ where: { id } });
   if (!addon) return redirect("/backoffice/addons");
 
   return addon;

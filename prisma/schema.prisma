@@ -102,6 +102,7 @@ model Addons {
   isAvailable     Boolean         @default(true)
   addonCategory   AddonCategories @relation(fields: [addonCategoryId], references: [id])
   orders          Orders[]
+  orderAddons     OrderAddons[]
   isArchived      Boolean         @default(false)
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
@@ -167,21 +168,30 @@ model DisabledLocationMenus {
 }
 
 model Orders {
-  id         Int         @id @default(autoincrement())
-  menuId     Int
-  addonId    Int?
-  quantity   Int
-  orderSeq   String
-  itemId     String
-  status     ORDERSTATUS
-  totalPrice Int
-  tableId    Int
-  isArchived Boolean     @default(false)
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  menus      Menus       @relation(fields: [menuId], references: [id])
-  addons     Addons?      @relation(fields: [addonId], references: [id])
-  tables     Tables      @relation(fields: [tableId], references: [id])
+  id          Int           @id @default(autoincrement())
+  menuId      Int
+  addonId     Int?
+  quantity    Int
+  orderSeq    String
+  itemId      String
+  status      ORDERSTATUS
+  totalPrice  Int
+  tableId     Int
+  orderAddons OrderAddons[]
+  isArchived  Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  menus       Menus         @relation(fields: [menuId], references: [id])
+  addons      Addons?       @relation(fields: [addonId], references: [id])
+  tables      Tables        @relation(fields: [tableId], references: [id])
+}
+
+model OrderAddons {
+  id      Int    @id @default(autoincrement())
+  orderId Int
+  addonId Int
+  orders  Orders @relation(fields: [orderId], references: [id])
+  addons  Addons @relation(fields: [addonId], references: [id])
 }
 
 enum ORDERSTATUS {

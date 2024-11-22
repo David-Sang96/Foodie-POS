@@ -16,7 +16,7 @@ const CreateMenuValidator = menuFormSchema.omit({
 const DeleteMenuValidator = menuFormSchema.pick({ id: true });
 
 export async function getMenu(id: number) {
-  const menu = await prisma.menus.findFirst({
+  const menu = await prisma.menus.findUnique({
     where: { id: Number(id) },
     include: {
       menuCategoriesMenus: true,
@@ -158,7 +158,7 @@ export async function updateMenu(formData: FormData) {
       }
     }
 
-    const menu = await prisma.menus.findFirst({ where: { id } });
+    const menu = await prisma.menus.findUnique({ where: { id } });
     await prisma.menus.update({
       where: { id },
       data: { name, price, imageUrl: imageUrl ? imageUrl : menu?.imageUrl },

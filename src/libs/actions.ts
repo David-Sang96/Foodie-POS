@@ -5,7 +5,7 @@ import { getServerSession, User } from "next-auth";
 import { prisma } from "./prisma";
 
 export async function getUser(email: string) {
-  return await prisma.users.findFirst({ where: { email } });
+  return await prisma.users.findUnique({ where: { email } });
 }
 
 export async function createDefaultData(nextAuthUser: User) {
@@ -85,7 +85,7 @@ export async function createDefaultData(nextAuthUser: User) {
 
 export async function getCompanyId() {
   const session = await getServerSession();
-  const dbUser = await prisma.users.findFirst({
+  const dbUser = await prisma.users.findUnique({
     where: { email: session?.user?.email as string },
   });
   const company = await prisma.company.findFirst({
@@ -96,7 +96,7 @@ export async function getCompanyId() {
 
 export async function getDBUserId() {
   const session = await getServerSession();
-  const dbUser = await prisma.users.findFirst({
+  const dbUser = await prisma.users.findUnique({
     where: { email: session?.user?.email as string, isArchived: false },
   });
   return dbUser?.id;
@@ -179,24 +179,22 @@ export async function getSelectedLocation() {
 }
 
 export async function getCompanyByTableId(tableId: string) {
-  const table = await prisma.tables.findFirst({
+  const table = await prisma.tables.findUnique({
     where: { id: Number(tableId), isArchived: false },
   });
-  console.log("table", table);
   const location = await prisma.locations.findUnique({
     where: { id: table?.locationId, isArchived: false },
   });
-  console.log("location", location);
-  return await prisma.company.findFirst({
+  return await prisma.company.findUnique({
     where: { id: location?.companyId, isArchived: false },
   });
 }
 
 export async function getCurrentLocationByTableId(tableId: string) {
-  const table = await prisma.tables.findFirst({
+  const table = await prisma.tables.findUnique({
     where: { id: Number(tableId), isArchived: false },
   });
-  return await prisma.locations.findFirst({
+  return await prisma.locations.findUnique({
     where: { id: table?.locationId, isArchived: false },
   });
 }

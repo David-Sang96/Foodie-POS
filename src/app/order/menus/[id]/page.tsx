@@ -1,7 +1,9 @@
+import MenuOptions from "@/components/MenuOptions";
 import OrderAppHeader from "@/components/OrderAppHeader";
 import { getCompanyByTableId } from "@/libs/actions";
 import { prisma } from "@/libs/prisma";
 import { Box } from "@mui/material";
+import type { Prisma } from "@prisma/client";
 
 interface Props {
   params: {
@@ -12,6 +14,14 @@ interface Props {
   };
 }
 
+export type MenuWithMenusAddonCategories = Prisma.MenusGetPayload<{
+  include: { menusAddonCategories: true };
+}>;
+
+export type OrdersWithOrderAddons = Prisma.OrdersGetPayload<{
+  include: { orderAddons: true };
+}>;
+
 const OrderMenuDetails = async ({ params, searchParams }: Props) => {
   const company = await getCompanyByTableId(searchParams.tableId);
   const menu = await prisma.menus.findFirst({
@@ -21,6 +31,9 @@ const OrderMenuDetails = async ({ params, searchParams }: Props) => {
   const addonCategoryIds = menu?.menusAddonCategories.map(
     (item) => item.addonCategoryId
   );
+  const addonCategories = await prisma.addonCategories.findMany({
+    where: { id: { in: addonCategoryIds } },
+  });
   const addons = await prisma.addons.findMany({
     where: { addonCategoryId: { in: addonCategoryIds } },
   });
@@ -32,6 +45,12 @@ const OrderMenuDetails = async ({ params, searchParams }: Props) => {
       <OrderAppHeader
         company={company}
         headerMenuImageUrl={menu.imageUrl as string}
+      />
+      <MenuOptions
+        menu={menu}
+        addonCategories={addonCategories}
+        addons={addons}
+        tableId={searchParams.tableId}
       />
     </Box>
   );

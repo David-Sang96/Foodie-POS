@@ -5,7 +5,7 @@ import { prisma } from "@/libs/prisma";
 
 export async function getCompany() {
   const companyId = await getCompanyId();
-  const company = await prisma.company.findFirst({ where: { id: companyId } });
+  const company = await prisma.company.findUnique({ where: { id: companyId } });
   return company;
 }
 

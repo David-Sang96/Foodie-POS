@@ -16,7 +16,7 @@ export async function getTables() {
   });
 }
 export async function getTable(id: number) {
-  const table = await prisma.tables.findFirst({ where: { id } });
+  const table = await prisma.tables.findUnique({ where: { id } });
   if (!table) return redirect("/backoffice/tables");
 
   return table;

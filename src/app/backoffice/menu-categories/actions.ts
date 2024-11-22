@@ -22,7 +22,7 @@ const UpdateMenuCategoryValidator = menuCategoryFormSchema.omit({
 const DeleteMenuCategoryValidator = menuCategoryFormSchema.pick({ id: true });
 
 export async function getMenuCategory(id: string) {
-  const menuCategory = await prisma.menuCategories.findFirst({
+  const menuCategory = await prisma.menuCategories.findUnique({
     where: { id: Number(id), isArchived: false },
     include: { disabledLocationMenuCategories: true },
   });

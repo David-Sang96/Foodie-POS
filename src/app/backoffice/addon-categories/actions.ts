@@ -4,7 +4,7 @@ import { prisma } from "@/libs/prisma";
 import { redirect } from "next/navigation";
 
 export async function getAddonCategory(id: number) {
-  const addonCategory = await prisma.addonCategories.findFirst({
+  const addonCategory = await prisma.addonCategories.findUnique({
     where: { id },
     include: { menusAddonCategories: true },
   });
