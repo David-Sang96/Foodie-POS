@@ -54,7 +54,6 @@ const MenuUpdateForm = ({
     } else {
       toast.success("Updated Successfully");
       router.push("/backoffice/menus");
-      router.refresh();
     }
     setIsSubmitting(false);
   };

@@ -21,7 +21,6 @@ const MenuDeleteForm = ({ id }: Props) => {
     if (!response?.error) {
       toast.success("Deleted Successfully");
       router.push("/backoffice/menus");
-      router.refresh();
     } else {
       toast.error(response.error);
     }

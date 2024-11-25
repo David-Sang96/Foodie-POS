@@ -17,12 +17,11 @@ const MenuCategoryDeleteForm = ({ id }: Props) => {
   const handleDelete = async () => {
     setLoading(true);
     const response = await deleteMenuCategory(Number(id));
-    if (response.error) {
-      toast.error(response.error);
+    if (response?.error) {
+      toast.error(response?.error);
     } else {
       toast.success("Deleted successfully");
       router.push("/backoffice/menu-categories");
-      router.refresh();
     }
     setLoading(false);
   };

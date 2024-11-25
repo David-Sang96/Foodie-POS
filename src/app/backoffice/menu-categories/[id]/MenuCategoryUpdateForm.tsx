@@ -47,12 +47,11 @@ const MenuCategoryUpdateForm = ({ menuCategory, isAvailable, id }: Props) => {
       isAvailable,
       name,
     });
-    if (response.error) {
+    if (response?.error) {
       toast.error(response.error);
     } else {
       toast.success("Updated successfully");
       router.push("/backoffice/menu-categories");
-      router.refresh();
     }
     setError("root", { message: "Something went wrong in form" });
   };

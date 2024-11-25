@@ -9,7 +9,7 @@ const SignIn = () => {
     <Box
       sx={{
         width: "100vw",
-        height: "100vdh",
+        height: "100dvh",
         bgcolor: "#f1faee",
         display: "flex",
         pt: 30,

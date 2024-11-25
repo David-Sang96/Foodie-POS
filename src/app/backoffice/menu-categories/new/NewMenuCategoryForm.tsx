@@ -28,12 +28,11 @@ const NewMenuCategoryForm = () => {
 
   const onSubmit: SubmitHandler<FormFields> = async (data) => {
     const response = await createMenuCategory(data.name);
-    if (response.error) {
+    if (response?.error) {
       toast.error(response.error);
     } else {
       toast.success("Created successfully");
       router.push("/backoffice/menu-categories");
-      router.refresh();
     }
     setError("root", {
       message: "Something went wrong in form",

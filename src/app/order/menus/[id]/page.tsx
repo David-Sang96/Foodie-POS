@@ -32,10 +32,10 @@ const OrderMenuDetails = async ({ params, searchParams }: Props) => {
     (item) => item.addonCategoryId
   );
   const addonCategories = await prisma.addonCategories.findMany({
-    where: { id: { in: addonCategoryIds } },
+    where: { id: { in: addonCategoryIds }, isArchived: false },
   });
   const addons = await prisma.addons.findMany({
-    where: { addonCategoryId: { in: addonCategoryIds } },
+    where: { addonCategoryId: { in: addonCategoryIds }, isArchived: false },
   });
 
   if (!menu || !company) return null;
@@ -50,7 +50,7 @@ const OrderMenuDetails = async ({ params, searchParams }: Props) => {
         menu={menu}
         addonCategories={addonCategories}
         addons={addons}
-        tableId={searchParams.tableId}
+        tableId={Number(searchParams.tableId)}
       />
     </Box>
   );

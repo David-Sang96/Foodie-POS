@@ -41,7 +41,6 @@ const NewMenuForm = ({ menuCategories }: Props) => {
     } else {
       toast.success("Menu Created Successfully");
       router.push("/backoffice/menus");
-      router.refresh();
     }
     setIsLoading(false);
   };

@@ -101,7 +101,6 @@ model Addons {
   addonCategoryId Int
   isAvailable     Boolean         @default(true)
   addonCategory   AddonCategories @relation(fields: [addonCategoryId], references: [id])
-  orders          Orders[]
   orderAddons     OrderAddons[]
   isArchived      Boolean         @default(false)
   createdAt       DateTime        @default(now())
@@ -170,19 +169,15 @@ model DisabledLocationMenus {
 model Orders {
   id          Int           @id @default(autoincrement())
   menuId      Int
-  addonId     Int?
-  quantity    Int
-  orderSeq    String
-  itemId      String
-  status      ORDERSTATUS
-  totalPrice  Int
   tableId     Int
+  quantity    Int
+  status      ORDERSTATUS   @default(CART)
+  totalPrice  Int
   orderAddons OrderAddons[]
   isArchived  Boolean       @default(false)
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   menus       Menus         @relation(fields: [menuId], references: [id])
-  addons      Addons?       @relation(fields: [addonId], references: [id])
   tables      Tables        @relation(fields: [tableId], references: [id])
 }
 
@@ -195,6 +190,7 @@ model OrderAddons {
 }
 
 enum ORDERSTATUS {
+  CART
   PENDING
   COOKING
   COMPLETE

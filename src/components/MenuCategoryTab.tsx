@@ -59,7 +59,7 @@ const MenuCategoryTab = ({ menuCategories, menus, tableId }: Props) => {
           />
         ))}
       </Tabs>
-      <Box sx={{ mt: 2, display: "flex", flexWrap: "wrap", gap: 2 }}>
+      <Box sx={{ mt: 2, display: "flex", flexWrap: "wrap", gap: 1 }}>
         {menusToShow.map((menu) => {
           return (
             <MenuCard

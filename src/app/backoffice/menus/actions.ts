@@ -4,6 +4,7 @@ import { getSelectedLocation } from "@/libs/actions";
 import { prisma } from "@/libs/prisma";
 import { menuFormSchema } from "@/libs/zodSchemas";
 import { put } from "@vercel/blob";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
@@ -101,7 +102,8 @@ export async function createMenuClient(formData: FormData) {
     }));
     await prisma.menuCategoriesMenus.createMany({ data });
 
-    return { error: null, newMenu };
+    revalidatePath("/backoffice/menus");
+    return { success: true };
   } catch (err) {
     if (err instanceof z.ZodError) {
       return { errors: err.errors };
@@ -205,6 +207,7 @@ export async function updateMenu(formData: FormData) {
       }));
       await prisma.menusAddonCategories.createMany({ data });
     }
+    revalidatePath("/backoffice/menus");
   } catch (error) {
     if (error instanceof z.ZodError) {
       return { error: error.errors };
@@ -229,6 +232,8 @@ export async function deleteMenu(menuId: number) {
     });
     await prisma.menusAddonCategories.deleteMany({ where: { menuId: id } });
     await prisma.menus.update({ where: { id }, data: { isArchived: true } });
+
+    revalidatePath("/backoffice/menus");
   } catch (error) {
     if (error instanceof z.ZodError) {
       const errorMessage = error.errors[0].message;

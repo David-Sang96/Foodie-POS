@@ -1,9 +1,15 @@
+-- CreateEnum
+CREATE TYPE "ORDERSTATUS" AS ENUM ('CART', 'PENDING', 'COOKING', 'COMPLETE');
+
 -- CreateTable
 CREATE TABLE "Users" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "companyId" INTEGER NOT NULL,
+    "isArchived" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Users_pkey" PRIMARY KEY ("id")
 );
@@ -13,8 +19,27 @@ CREATE TABLE "Company" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "address" TEXT NOT NULL,
+    "city" TEXT NOT NULL,
+    "country" TEXT NOT NULL,
+    "zipCode" TEXT NOT NULL,
+    "callingCode" TEXT NOT NULL,
+    "isArchived" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Company_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "MenuCategories" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "companyId" INTEGER NOT NULL,
+    "isArchived" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "MenuCategories_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -22,19 +47,12 @@ CREATE TABLE "Menus" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "price" INTEGER DEFAULT 0,
-    "isAvailable" BOOLEAN DEFAULT true,
+    "imageUrl" TEXT,
+    "isArchived" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Menus_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "MenuCategories" (
-    "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
-    "isAvailable" BOOLEAN DEFAULT true,
-    "companyId" INTEGER NOT NULL,
-
-    CONSTRAINT "MenuCategories_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -42,6 +60,9 @@ CREATE TABLE "MenuCategoriesMenus" (
     "id" SERIAL NOT NULL,
     "menuId" INTEGER NOT NULL,
     "menuCategoryId" INTEGER NOT NULL,
+    "isArchived" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "MenuCategoriesMenus_pkey" PRIMARY KEY ("id")
 );
@@ -51,6 +72,9 @@ CREATE TABLE "AddonCategories" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "isRequired" BOOLEAN NOT NULL DEFAULT false,
+    "isArchived" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "AddonCategories_pkey" PRIMARY KEY ("id")
 );
@@ -60,6 +84,9 @@ CREATE TABLE "MenusAddonCategories" (
     "id" SERIAL NOT NULL,
     "menuId" INTEGER NOT NULL,
     "addonCategoryId" INTEGER NOT NULL,
+    "isArchived" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "MenusAddonCategories_pkey" PRIMARY KEY ("id")
 );
@@ -71,6 +98,9 @@ CREATE TABLE "Addons" (
     "price" INTEGER NOT NULL,
     "addonCategoryId" INTEGER NOT NULL,
     "isAvailable" BOOLEAN NOT NULL DEFAULT true,
+    "isArchived" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Addons_pkey" PRIMARY KEY ("id")
 );
@@ -80,6 +110,9 @@ CREATE TABLE "Locations" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "companyId" INTEGER NOT NULL,
+    "isArchived" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Locations_pkey" PRIMARY KEY ("id")
 );
@@ -89,6 +122,10 @@ CREATE TABLE "Tables" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "locationId" INTEGER NOT NULL,
+    "qrCodeImageUrl" TEXT NOT NULL,
+    "isArchived" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "Tables_pkey" PRIMARY KEY ("id")
 );
@@ -98,6 +135,9 @@ CREATE TABLE "SelectedLocations" (
     "id" SERIAL NOT NULL,
     "userId" INTEGER NOT NULL,
     "locationId" INTEGER NOT NULL,
+    "isArchived" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "SelectedLocations_pkey" PRIMARY KEY ("id")
 );
@@ -107,6 +147,9 @@ CREATE TABLE "DisabledLocationMenuCategories" (
     "id" SERIAL NOT NULL,
     "locationId" INTEGER NOT NULL,
     "menuCategoryId" INTEGER NOT NULL,
+    "isArchived" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "DisabledLocationMenuCategories_pkey" PRIMARY KEY ("id")
 );
@@ -116,8 +159,35 @@ CREATE TABLE "DisabledLocationMenus" (
     "id" SERIAL NOT NULL,
     "locationId" INTEGER NOT NULL,
     "menuId" INTEGER NOT NULL,
+    "isArchived" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "DisabledLocationMenus_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "Orders" (
+    "id" SERIAL NOT NULL,
+    "menuId" INTEGER NOT NULL,
+    "tableId" INTEGER NOT NULL,
+    "quantity" INTEGER NOT NULL,
+    "status" "ORDERSTATUS" NOT NULL DEFAULT 'CART',
+    "totalPrice" INTEGER NOT NULL,
+    "isArchived" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Orders_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "OrderAddons" (
+    "id" SERIAL NOT NULL,
+    "orderId" INTEGER NOT NULL,
+    "addonId" INTEGER NOT NULL,
+
+    CONSTRAINT "OrderAddons_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -167,3 +237,15 @@ ALTER TABLE "DisabledLocationMenus" ADD CONSTRAINT "DisabledLocationMenus_locati
 
 -- AddForeignKey
 ALTER TABLE "DisabledLocationMenus" ADD CONSTRAINT "DisabledLocationMenus_menuId_fkey" FOREIGN KEY ("menuId") REFERENCES "Menus"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Orders" ADD CONSTRAINT "Orders_menuId_fkey" FOREIGN KEY ("menuId") REFERENCES "Menus"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Orders" ADD CONSTRAINT "Orders_tableId_fkey" FOREIGN KEY ("tableId") REFERENCES "Tables"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrderAddons" ADD CONSTRAINT "OrderAddons_orderId_fkey" FOREIGN KEY ("orderId") REFERENCES "Orders"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "OrderAddons" ADD CONSTRAINT "OrderAddons_addonId_fkey" FOREIGN KEY ("addonId") REFERENCES "Addons"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

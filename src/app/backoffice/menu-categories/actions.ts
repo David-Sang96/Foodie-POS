@@ -3,6 +3,7 @@
 import { getCompanyId, getSelectedLocation } from "@/libs/actions";
 import { prisma } from "@/libs/prisma";
 import { menuCategoryFormSchema } from "@/libs/zodSchemas";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
@@ -64,12 +65,12 @@ export async function updateMenuCategory({
       }
     }
 
-    const updatedMenuCategory = await prisma.menuCategories.update({
+    await prisma.menuCategories.update({
       data: { name },
       where: { id: menuCategoryId },
     });
 
-    return { error: null, updatedMenuCategory };
+    revalidatePath("/backoffice/menu-categories");
   } catch (error) {
     let errorMessages = "";
     if (error instanceof z.ZodError) {
@@ -78,7 +79,6 @@ export async function updateMenuCategory({
       });
       return { error: errorMessages };
     } else {
-      console.error("Unexpected error:", error);
       return { error: "Something went wrong.Please contact our support." };
     }
   }
@@ -90,10 +90,11 @@ export async function createMenuCategory(menuCategoryName: string) {
       name: menuCategoryName,
       companyId: Number(await getCompanyId()),
     });
-    const newMenuCategory = await prisma.menuCategories.create({
+    await prisma.menuCategories.create({
       data: { name, companyId },
     });
-    return { newMenuCategory };
+
+    revalidatePath("/backoffice/menu-categories");
   } catch (error) {
     let errorMessages = "";
     if (error instanceof z.ZodError) {
@@ -117,7 +118,8 @@ export async function deleteMenuCategory(menuCategoryId: number) {
       where: { id },
       data: { isArchived: true },
     });
-    return { error: null };
+
+    revalidatePath("/backoffice/menu-categories");
   } catch (error) {
     if (error instanceof z.ZodError) {
       const errorMessage = error.errors[0].message;

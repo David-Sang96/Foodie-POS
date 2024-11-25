@@ -1,12 +1,12 @@
 "use client";
 
+import { createCartOrder } from "@/app/order/cart/actions";
 import type {
   MenuWithMenusAddonCategories,
   OrdersWithOrderAddons,
 } from "@/app/order/menus/[id]/page";
 import { Box, Button } from "@mui/material";
 import type { AddonCategories, Addons } from "@prisma/client";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import AddonCategoriesAndAddons from "./AddonCategoriesAndAddons";
 import QuantitySelector from "./QuantitySelector";
@@ -15,29 +15,28 @@ interface Props {
   menu: MenuWithMenusAddonCategories;
   addonCategories: AddonCategories[];
   addons: Addons[];
-  tableId: string;
+  tableId: number;
   order?: OrdersWithOrderAddons | null;
 }
 
-const MenuOptions = ({ addonCategories, addons, tableId }: Props) => {
+const MenuOptions = ({ addonCategories, addons, tableId, menu }: Props) => {
   const [selectedAddons, setSelectedAddons] = useState<Addons[]>([]);
   const [quantity, setQuantity] = useState<number>(1);
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
-  const router = useRouter();
 
   useEffect(() => {
     const requiredAddonCategory = addonCategories.filter(
       (item) => item.isRequired
     );
-    const selectedRequiredAddons = selectedAddons.filter((selectedAddon) => {
-      const addonCategory = addonCategories.find(
-        (item) => item.id === selectedAddon.addonCategoryId
-      );
-      return addonCategory?.isRequired ? true : false;
-    });
-    const isDisabled =
-      requiredAddonCategory.length !== selectedRequiredAddons.length;
-    setIsDisabled(isDisabled);
+    const selectedRequiredAddons = selectedAddons.filter(
+      (selectedAddon) =>
+        !!requiredAddonCategory.find(
+          (item) => item.id === selectedAddon.addonCategoryId
+        )
+    );
+    setIsDisabled(
+      requiredAddonCategory.length !== selectedRequiredAddons.length
+    );
   }, [selectedAddons, addonCategories]);
 
   const handleIncreaseQuantity = () => {
@@ -48,7 +47,14 @@ const MenuOptions = ({ addonCategories, addons, tableId }: Props) => {
     setQuantity((quantity) => (quantity - 1 === 0 ? 1 : quantity - 1));
   };
 
-  const handleCreateCartOrder = () => {};
+  const handleCreateCartOrder = async () => {
+    await createCartOrder({
+      menuId: menu.id,
+      addonIds: selectedAddons.map((item) => item.id),
+      quantity,
+      tableId,
+    });
+  };
 
   return (
     <Box
