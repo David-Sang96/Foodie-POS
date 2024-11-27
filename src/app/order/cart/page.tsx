@@ -1,4 +1,5 @@
 import { Box, Divider, Typography } from "@mui/material";
+import { getCardTotalPrice } from "./actions";
 
 interface Props {
   searchParams: {
@@ -65,14 +66,21 @@ const CartPage = async ({ searchParams }: Props) => {
                   <Typography fontSize={14} fontStyle={"italic"}>
                     {item.name}
                   </Typography>
-                  <Typography fontSize={14}>RM {item.price}</Typography>
+                  <Typography fontSize={14} fontStyle={"italic"}>
+                    RM {item.price}
+                  </Typography>
                 </Box>
               ))}
             </>
-            <Divider />
           </Box>
         );
       })}
+      <Divider sx={{ borderBottomWidth: 2 }} />
+      <Box pt={2}>
+        <Typography align="right">
+          Total price : RM {await getCardTotalPrice(Number(tableId))}
+        </Typography>
+      </Box>
     </Box>
   );
 };

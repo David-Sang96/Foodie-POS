@@ -173,7 +173,6 @@ CREATE TABLE "Orders" (
     "tableId" INTEGER NOT NULL,
     "quantity" INTEGER NOT NULL,
     "status" "ORDERSTATUS" NOT NULL DEFAULT 'CART',
-    "totalPrice" INTEGER NOT NULL,
     "isArchived" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,

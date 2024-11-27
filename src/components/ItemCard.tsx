@@ -23,7 +23,7 @@ export default function ItemCard({
     <Link href={href} style={{ textDecoration: "none" }}>
       <Card
         sx={{
-          width: 200,
+          width: 250,
           height: 150,
           display: "flex",
           justifyContent: "center",
@@ -51,7 +51,7 @@ export default function ItemCard({
           </Typography>
           {subtitle && (
             <Typography component="div" sx={{ fontSize: 14 }}>
-              {subtitle}
+              RM {subtitle}
             </Typography>
           )}
         </CardContent>

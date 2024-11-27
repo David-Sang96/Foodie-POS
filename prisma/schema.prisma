@@ -172,7 +172,6 @@ model Orders {
   tableId     Int
   quantity    Int
   status      ORDERSTATUS   @default(CART)
-  totalPrice  Int
   orderAddons OrderAddons[]
   isArchived  Boolean       @default(false)
   createdAt   DateTime      @default(now())

@@ -20,7 +20,7 @@ export default function MenuCard({
   showIsAvailable,
 }: Props) {
   return (
-    <Link href={relatedUrl} style={{ textDecoration: "none", width: 240 }}>
+    <Link href={relatedUrl} style={{ textDecoration: "none", width: 270 }}>
       <Card
         sx={{
           transition: "transform 0.3s ease, box-shadow 0.3s ease",
@@ -34,7 +34,7 @@ export default function MenuCard({
       >
         <CardMedia
           sx={{
-            height: 150,
+            height: 170,
             width: "100%",
             borderRadius: "5px 5px 0 0", // Rounded corners on top
           }}

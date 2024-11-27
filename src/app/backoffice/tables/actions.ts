@@ -11,7 +11,7 @@ import QRCode from "qrcode";
 export async function getTables() {
   const selectedLocationId = (await getSelectedLocation())?.locationId;
   return await prisma.tables.findMany({
-    where: { locationId: selectedLocationId },
+    where: { locationId: selectedLocationId, isArchived: false },
     orderBy: { id: "asc" },
   });
 }
