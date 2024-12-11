@@ -1,6 +1,6 @@
 "use client";
 
-import { createCartOrder } from "@/app/order/cart/actions";
+import { createOrUpdateCartOrder } from "@/app/order/cart/actions";
 import type {
   MenuWithMenusAddonCategories,
   OrdersWithOrderAddons,
@@ -16,10 +16,16 @@ interface Props {
   addonCategories: AddonCategories[];
   addons: Addons[];
   tableId: number;
-  order?: OrdersWithOrderAddons | null;
+  order: OrdersWithOrderAddons | null;
 }
 
-const MenuOptions = ({ addonCategories, addons, tableId, menu }: Props) => {
+const MenuOptions = ({
+  addonCategories,
+  addons,
+  tableId,
+  menu,
+  order,
+}: Props) => {
   const [selectedAddons, setSelectedAddons] = useState<Addons[]>([]);
   const [quantity, setQuantity] = useState<number>(1);
   const [isDisabled, setIsDisabled] = useState<boolean>(true);
@@ -39,6 +45,18 @@ const MenuOptions = ({ addonCategories, addons, tableId, menu }: Props) => {
     );
   }, [selectedAddons, addonCategories]);
 
+  useEffect(() => {
+    if (order) {
+      const { quantity, orderAddons } = order;
+      const addonIds = orderAddons.map((item) => item.addonId);
+      const selectedAddons = addons.filter((addon) =>
+        addonIds.includes(addon.id)
+      );
+      setSelectedAddons(selectedAddons);
+      setQuantity(quantity);
+    }
+  }, [order, addons]);
+
   const handleIncreaseQuantity = () => {
     setQuantity((quantity) => quantity + 1);
   };
@@ -47,12 +65,13 @@ const MenuOptions = ({ addonCategories, addons, tableId, menu }: Props) => {
     setQuantity((quantity) => (quantity - 1 === 0 ? 1 : quantity - 1));
   };
 
-  const handleCreateCartOrder = async () => {
-    await createCartOrder({
+  const handleCreateOrUpdateCartOrder = async () => {
+    await createOrUpdateCartOrder({
       menuId: menu.id,
       addonIds: selectedAddons.map((item) => item.id),
       quantity,
       tableId,
+      orderId: order?.id,
     });
   };
 
@@ -90,9 +109,9 @@ const MenuOptions = ({ addonCategories, addons, tableId, menu }: Props) => {
           mt: 1,
         }}
         disabled={isDisabled}
-        onClick={handleCreateCartOrder}
+        onClick={handleCreateOrUpdateCartOrder}
       >
-        Add to cart
+        {order ? "Update" : "Add to cart"}
       </Button>
     </Box>
   );

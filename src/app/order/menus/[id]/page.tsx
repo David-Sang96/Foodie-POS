@@ -11,6 +11,7 @@ interface Props {
   };
   searchParams: {
     tableId: string;
+    orderId: string;
   };
 }
 
@@ -23,7 +24,8 @@ export type OrdersWithOrderAddons = Prisma.OrdersGetPayload<{
 }>;
 
 const OrderMenuDetails = async ({ params, searchParams }: Props) => {
-  const company = await getCompanyByTableId(searchParams.tableId);
+  const { tableId, orderId } = searchParams;
+  const company = await getCompanyByTableId(tableId);
   const menu = await prisma.menus.findFirst({
     where: { id: Number(params.id), isArchived: false },
     include: { menusAddonCategories: true },
@@ -37,6 +39,13 @@ const OrderMenuDetails = async ({ params, searchParams }: Props) => {
   const addons = await prisma.addons.findMany({
     where: { addonCategoryId: { in: addonCategoryIds }, isArchived: false },
   });
+  let order: OrdersWithOrderAddons | null = null;
+  if (orderId) {
+    order = await prisma.orders.findUnique({
+      where: { id: Number(orderId) },
+      include: { orderAddons: true },
+    });
+  }
 
   if (!menu || !company) return null;
 
@@ -45,12 +54,14 @@ const OrderMenuDetails = async ({ params, searchParams }: Props) => {
       <OrderAppHeader
         company={company}
         headerMenuImageUrl={menu.imageUrl as string}
+        tableId={tableId}
       />
       <MenuOptions
         menu={menu}
         addonCategories={addonCategories}
         addons={addons}
         tableId={Number(searchParams.tableId)}
+        order={order}
       />
     </Box>
   );

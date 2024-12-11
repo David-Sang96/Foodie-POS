@@ -34,7 +34,7 @@ const OrderApp = async ({ searchParams }: Props) => {
   if (!company) return null;
   return (
     <Box>
-      <OrderAppHeader company={company} />
+      <OrderAppHeader company={company} tableId={tableId} />
       <MenuCategoryTab
         menuCategories={menuCategories}
         menus={menus}

@@ -1,18 +1,18 @@
 import { Box, Button, Divider, Typography } from "@mui/material";
 import { ORDERSTATUS } from "@prisma/client";
 import Link from "next/link";
-import { confirmOrder, deleteCartOrder, getCardTotalPrice } from "./actions";
+import { getCardTotalPrice } from "../cart/actions";
 
-interface Props {
+interface ActiveOrderPageProp {
   searchParams: {
     tableId: string;
   };
 }
 
-const CartPage = async ({ searchParams }: Props) => {
+const ActiveOrderPage = async ({ searchParams }: ActiveOrderPageProp) => {
   const tableId = Number(searchParams.tableId);
   const cartOrders = await prisma.orders.findMany({
-    where: { tableId, status: ORDERSTATUS.CART },
+    where: { tableId, NOT: { status: ORDERSTATUS.CART } },
     include: { menus: true },
   });
 
@@ -28,7 +28,7 @@ const CartPage = async ({ searchParams }: Props) => {
         }}
       >
         <Typography variant="h5" mb={2}>
-          Cart is empty.Order some tasty menus!
+          No active order yet.Order some tasty menus!
         </Typography>
         <Link href={`/order?tableId=${tableId}`}>
           <Button variant="contained"> go back home</Button>
@@ -92,28 +92,6 @@ const CartPage = async ({ searchParams }: Props) => {
                 </Box>
               ))}
             </Box>
-            <Box sx={{ display: "flex", justifyContent: "end", gap: 1 }}>
-              <Box component={"form"} action={deleteCartOrder}>
-                <input hidden defaultValue={id} name="id" />
-                <Button
-                  variant="contained"
-                  sx={{ fontSize: 11, bgcolor: "#ef4444" }}
-                  type="submit"
-                >
-                  Delete
-                </Button>
-              </Box>
-              <Link
-                href={`/order/menus/${cartOrder.menuId}?tableId=${tableId}&orderId=${cartOrder.id}`}
-              >
-                <Button
-                  variant="contained"
-                  sx={{ fontSize: 11, bgcolor: "#16a34a" }}
-                >
-                  Edit
-                </Button>
-              </Link>
-            </Box>
           </Box>
         );
       })}
@@ -123,18 +101,8 @@ const CartPage = async ({ searchParams }: Props) => {
           Total price : RM {await getCardTotalPrice(Number(tableId))}
         </Typography>
       </Box>
-      <Box
-        sx={{ textAlign: "center", mt: 2 }}
-        component={"form"}
-        action={confirmOrder}
-      >
-        <input hidden defaultValue={tableId} name="tableId" />
-        <Button variant="contained" sx={{ px: 1, fontSize: 12 }} type="submit">
-          Confirm Order
-        </Button>
-      </Box>
     </Box>
   );
 };
 
-export default CartPage;
+export default ActiveOrderPage;

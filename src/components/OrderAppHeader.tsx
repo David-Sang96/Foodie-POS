@@ -1,15 +1,18 @@
 import { Box, Typography } from "@mui/material";
 import { Company } from "@prisma/client";
 import Image from "next/image";
+import { CartButton } from "./CartButton";
 
 interface Props {
   company: Company;
   headerMenuImageUrl?: string;
+  tableId: string;
 }
 
-const OrderAppHeader = ({ company, headerMenuImageUrl }: Props) => {
+const OrderAppHeader = ({ company, headerMenuImageUrl, tableId }: Props) => {
   return (
     <Box sx={{ position: "relative" }}>
+      <CartButton tableId={Number(tableId)} />
       <Box
         sx={{
           bgcolor: "#457b9d",

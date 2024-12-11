@@ -32,7 +32,7 @@ export async function createDefaultData(nextAuthUser: User) {
     data: {
       name: "Default Menu",
       imageUrl:
-        "https://t2fdyui6j2e69if5.public.blob.vercel-storage.com/foodie-pos/menus/default-img-ctpGW8fV9U9WsGQq9Ipf99pbrx09F9.png",
+        "https://t2fdyui6j2e69if5.public.blob.vercel-storage.com/foodie-pos/menus/photo_2024-12-11_13-01-12-MvGUPF8V1EyvgztBSvL6ogD3aGI6mK.jpg",
     },
   });
 

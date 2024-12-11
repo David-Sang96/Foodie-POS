@@ -50,7 +50,6 @@ export default function MenuCard({
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              mb: 1, // margin bottom for spacing
             }}
           >
             <Typography
@@ -80,6 +79,7 @@ export default function MenuCard({
                 textAlign: "center",
                 fontWeight: "medium",
                 width: "50%",
+                marginTop: 1,
               }}
               fontSize={"small"}
             >
