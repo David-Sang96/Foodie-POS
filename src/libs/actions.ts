@@ -8,6 +8,7 @@ export async function getUser(email: string) {
   return await prisma.users.findUnique({ where: { email } });
 }
 
+// initial default data creation
 export async function createDefaultData(nextAuthUser: User) {
   const { name, email } = nextAuthUser;
   const company = await prisma.company.create({
@@ -83,6 +84,7 @@ export async function createDefaultData(nextAuthUser: User) {
   });
 }
 
+// company
 export async function getCompanyId() {
   const session = await getServerSession();
   const dbUser = await prisma.users.findUnique({
@@ -94,6 +96,7 @@ export async function getCompanyId() {
   return company?.id;
 }
 
+// user
 export async function getDBUserId() {
   const session = await getServerSession();
   const dbUser = await prisma.users.findUnique({
@@ -102,6 +105,7 @@ export async function getDBUserId() {
   return dbUser?.id;
 }
 
+// menu-categories
 export async function getCompanyMenuCategories() {
   return await prisma.menuCategories.findMany({
     orderBy: { id: "desc" },
@@ -110,6 +114,7 @@ export async function getCompanyMenuCategories() {
   });
 }
 
+// menus
 export async function getCompanyMenus() {
   const menuCategories = await getCompanyMenuCategories();
   const menuCategoryIds = menuCategories.map((item) => item.id);
@@ -124,6 +129,7 @@ export async function getCompanyMenus() {
   });
 }
 
+// addon-categories
 export async function getCompanyAddonCategories() {
   const menus = await getCompanyMenus();
   const menuIds = menus.map((item) => item.id);
@@ -140,6 +146,7 @@ export async function getCompanyAddonCategories() {
   });
 }
 
+// addons
 export async function getCompanyAddons() {
   const addonCategories = await getCompanyAddonCategories();
   const addonCategoryIds = addonCategories.map((item) => item.id);
@@ -148,6 +155,7 @@ export async function getCompanyAddons() {
   });
 }
 
+// tables
 export async function getCompanyTables() {
   const companyId = await getCompanyId();
   const locationIds = (
@@ -158,12 +166,7 @@ export async function getCompanyTables() {
   });
 }
 
-export async function getLocationTables(locationId: number) {
-  return await prisma.tables.findMany({
-    where: { locationId, isArchived: false },
-  });
-}
-
+// locations
 export async function getCompanyLocations() {
   return await prisma.locations.findMany({
     orderBy: { id: "asc" },
@@ -171,6 +174,7 @@ export async function getCompanyLocations() {
   });
 }
 
+// current selected location
 export async function getSelectedLocation() {
   return await prisma.selectedLocations.findFirst({
     where: { userId: await getDBUserId(), isArchived: false },
@@ -178,6 +182,25 @@ export async function getSelectedLocation() {
   });
 }
 
+// get location with table id
+export async function getCurrentLocationByTableId(tableId: string) {
+  const table = await prisma.tables.findUnique({
+    where: { id: Number(tableId), isArchived: false },
+  });
+  return await prisma.locations.findUnique({
+    where: { id: table?.locationId, isArchived: false },
+  });
+}
+
+// tables in selected location
+export async function getSelectedLocationTables() {
+  const selectedLocationId = (await getSelectedLocation())?.locationId;
+  return await prisma.tables.findMany({
+    where: { locationId: selectedLocationId, isArchived: false },
+  });
+}
+
+// get company with table id
 export async function getCompanyByTableId(tableId: string) {
   const table = await prisma.tables.findUnique({
     where: { id: Number(tableId), isArchived: false },
@@ -190,15 +213,7 @@ export async function getCompanyByTableId(tableId: string) {
   });
 }
 
-export async function getCurrentLocationByTableId(tableId: string) {
-  const table = await prisma.tables.findUnique({
-    where: { id: Number(tableId), isArchived: false },
-  });
-  return await prisma.locations.findUnique({
-    where: { id: table?.locationId, isArchived: false },
-  });
-}
-
+// get menu-categories with table id
 export async function getMenuCategoriesByTableId(tableId: string) {
   const company = await getCompanyByTableId(tableId);
   const menuCategories = await prisma.menuCategories.findMany({
@@ -219,6 +234,7 @@ export async function getMenuCategoriesByTableId(tableId: string) {
   );
 }
 
+// get menus with menu-category ids
 export async function getMenusByMenuCategoryIds(
   menuCategoryIds: number[],
   tableId: string
@@ -239,6 +255,5 @@ export async function getMenusByMenuCategoryIds(
     },
   });
   const disabledMenuIds = disabledMenus.map((item) => item.menuId);
-
   return menus.filter((menu) => !disabledMenuIds.includes(menu.id));
 }

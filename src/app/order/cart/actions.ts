@@ -49,7 +49,10 @@ export const createOrUpdateCartOrder = async (payload: CreateCartOrderType) => {
   redirect(`/order?tableId=${tableId}`);
 };
 
-export async function getCardTotalPrice(tableId: number, status?: ORDERSTATUS) {
+export async function getTableTotalPrice(
+  tableId: number,
+  status?: ORDERSTATUS
+) {
   let cartOrders: OrderWithOrderAddonsAndMenus[] = [];
 
   if (status) {
@@ -119,5 +122,6 @@ export async function confirmOrder(formData: FormData) {
   }
 
   revalidatePath("/order/cart");
+  // revalidatePath("/backoffice/orders/pending");
   redirect(`/order/active-order?tableId=${tableId}`);
 }

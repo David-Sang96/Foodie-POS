@@ -1,3 +1,5 @@
+"use client";
+
 import CategoryIcon from "@mui/icons-material/Category";
 import ClassIcon from "@mui/icons-material/Class";
 import EggIcon from "@mui/icons-material/Egg";
@@ -16,8 +18,26 @@ import {
   ListItemText,
 } from "@mui/material";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { ReactNode } from "react";
+
+interface SideBarItemTypes {
+  id: number;
+  label: string;
+  icon: ReactNode;
+  route: string;
+}
 
 const SideBar = () => {
+  const pathName = usePathname();
+
+  const getBackgroundColor = (item: SideBarItemTypes) => {
+    if (item.route.includes("orders") && pathName.includes("orders")) {
+      return "#457b9d";
+    }
+    return item.route === pathName ? "#457b9d" : null;
+  };
+
   return (
     <Box
       sx={{
@@ -37,6 +57,7 @@ const SideBar = () => {
               disablePadding
               sx={{
                 ":hover": { background: "#457b9d" },
+                bgcolor: getBackgroundColor(item),
               }}
             >
               <ListItemButton>
@@ -55,12 +76,12 @@ const SideBar = () => {
 
 export default SideBar;
 
-const sideBarItems = [
+const sideBarItems: SideBarItemTypes[] = [
   {
     id: 1,
     label: "Orders",
     icon: <LocalMallIcon />,
-    route: "/backoffice",
+    route: "/backoffice/orders",
   },
   {
     id: 2,

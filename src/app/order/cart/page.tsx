@@ -1,7 +1,7 @@
 import { Box, Button, Divider, Typography } from "@mui/material";
 import { ORDERSTATUS } from "@prisma/client";
 import Link from "next/link";
-import { confirmOrder, deleteCartOrder, getCardTotalPrice } from "./actions";
+import { confirmOrder, deleteCartOrder, getTableTotalPrice } from "./actions";
 
 interface Props {
   searchParams: {
@@ -37,7 +37,7 @@ const CartPage = async ({ searchParams }: Props) => {
     );
 
   return (
-    <Box sx={{ maxWidth: 550, margin: "auto", pt: 4 }}>
+    <Box sx={{ maxWidth: 550, margin: "auto", py: 4 }}>
       {cartOrders.map(async (cartOrder) => {
         const { id, menus, quantity } = cartOrder;
         const orderAddons = await prisma.orderAddons.findMany({
@@ -120,7 +120,7 @@ const CartPage = async ({ searchParams }: Props) => {
       <Divider sx={{ borderBottomWidth: 2 }} />
       <Box pt={2}>
         <Typography align="right">
-          Total price : RM {await getCardTotalPrice(Number(tableId))}
+          Total price : RM {await getTableTotalPrice(Number(tableId))}
         </Typography>
       </Box>
       <Box

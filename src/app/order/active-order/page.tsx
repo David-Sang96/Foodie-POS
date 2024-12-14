@@ -1,7 +1,9 @@
-import { Box, Button, Divider, Typography } from "@mui/material";
+import { OrdersWithMenusAndTablesAndOrderAddons } from "@/app/backoffice/orders/[status]/page";
+import OrderCard from "@/components/OrderCard";
+import { Box, Button, Typography } from "@mui/material";
 import { ORDERSTATUS } from "@prisma/client";
 import Link from "next/link";
-import { getCardTotalPrice } from "../cart/actions";
+import { getTableTotalPrice } from "../cart/actions";
 
 interface ActiveOrderPageProp {
   searchParams: {
@@ -11,12 +13,13 @@ interface ActiveOrderPageProp {
 
 const ActiveOrderPage = async ({ searchParams }: ActiveOrderPageProp) => {
   const tableId = Number(searchParams.tableId);
-  const cartOrders = await prisma.orders.findMany({
-    where: { tableId, NOT: { status: ORDERSTATUS.CART } },
-    include: { menus: true },
-  });
+  const orders: OrdersWithMenusAndTablesAndOrderAddons[] =
+    await prisma.orders.findMany({
+      where: { tableId, NOT: { status: ORDERSTATUS.CART } },
+      include: { menus: true, tables: true, orderAddons: true },
+    });
 
-  if (!cartOrders.length)
+  if (!orders.length)
     return (
       <Box
         sx={{
@@ -37,71 +40,39 @@ const ActiveOrderPage = async ({ searchParams }: ActiveOrderPageProp) => {
     );
 
   return (
-    <Box sx={{ maxWidth: 550, margin: "auto", pt: 4 }}>
-      {cartOrders.map(async (cartOrder) => {
-        const { id, menus, quantity } = cartOrder;
-        const orderAddons = await prisma.orderAddons.findMany({
-          where: { orderId: id },
-          include: { addons: true },
-        });
-        const addons = orderAddons.map((item) => item.addons);
-        return (
-          <Box key={id} pb={2}>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                pb: 1,
-              }}
-            >
-              <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-                <Typography
-                  sx={{
-                    bgcolor: "green",
-                    color: "white",
-                    px: 1.5,
-                    py: 0.5,
-                    borderRadius: "50%",
-                  }}
-                >
-                  {quantity}
-                </Typography>
-                <Typography>{menus.name}</Typography>
-              </Box>
-              <Typography>RM {menus.price}</Typography>
-            </Box>
-            <Box>
-              {addons.map((item) => (
-                <Box
-                  key={item.id}
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    pb: 1,
-                    pl: 6,
-                  }}
-                >
-                  <Typography fontSize={14} fontStyle={"italic"}>
-                    {item.name}
-                  </Typography>
-                  <Typography fontSize={14} fontStyle={"italic"}>
-                    RM {item.price}
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
-          </Box>
-        );
-      })}
-      <Divider sx={{ borderBottomWidth: 2 }} />
-      <Box pt={2}>
-        <Typography align="right">
-          Total price : RM {await getCardTotalPrice(Number(tableId))}
+    <>
+      <Box sx={{ display: "flex", justifyContent: "center", py: 2 }}>
+        <Typography fontWeight={"bold"} variant="h5">
+          Total price: RM {await getTableTotalPrice(Number(tableId))}
         </Typography>
       </Box>
-    </Box>
+      <Box
+        sx={{
+          maxWidth: 1100,
+          margin: "auto",
+          pb: 6,
+          display: "flex",
+          flexWrap: "wrap",
+          gap: 1.5,
+        }}
+      >
+        {orders.map(async (order) => {
+          const addonIds = order.orderAddons.map((item) => item.addonId);
+          const addons = await prisma.addons.findMany({
+            where: { id: { in: addonIds } },
+            include: { addonCategory: true },
+          });
+          return (
+            <OrderCard
+              order={order}
+              addons={addons}
+              isAdmin={false}
+              key={order.id}
+            />
+          );
+        })}
+      </Box>
+    </>
   );
 };
 

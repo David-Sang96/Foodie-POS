@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
-const BackOfficePage = async () => {
+const OrdersPage = () => {
   redirect("/backoffice/orders/pending");
 };
 
-export default BackOfficePage;
+export default OrdersPage;
