@@ -1,14 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { config } from "@/config";
 import { createDefaultData, getUser } from "@/libs/actions";
 import NextAuth, { User } from "next-auth";
+import { AdapterUser } from "next-auth/adapters";
 import GoogleProvider from "next-auth/providers/google";
 
 interface Props {
-  user: User;
+  user: User | AdapterUser;
 }
 
-export const authOptions = {
+const authOptions = {
   providers: [
     GoogleProvider({
       clientId: config.googleClientId,

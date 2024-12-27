@@ -24,7 +24,7 @@ const MenuCategoryTab = ({ menuCategories, menus, tableId }: Props) => {
     );
     const getRelatedMenus = menus.filter((item) => menuIds.includes(item.id));
     setMenusToShow(getRelatedMenus);
-  }, [selectedMenuCategory]);
+  }, [selectedMenuCategory, menus]);
 
   return (
     <Box
