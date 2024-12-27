@@ -1,3 +1,4 @@
+import { prisma } from "@/libs/prisma";
 import { Box, Button, Divider, Typography } from "@mui/material";
 import { ORDERSTATUS } from "@prisma/client";
 import Link from "next/link";

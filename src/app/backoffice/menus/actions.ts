@@ -4,6 +4,7 @@ import { getSelectedLocation } from "@/libs/actions";
 import { prisma } from "@/libs/prisma";
 import { menuFormSchema } from "@/libs/zodSchemas";
 import { put } from "@vercel/blob";
+import { Buffer } from "buffer";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
@@ -51,7 +52,7 @@ export async function createMenuServer(formData: FormData) {
 
     if (file && file.size) {
       const arrayBuffer = await file.arrayBuffer();
-      const buffer = new Uint8Array(arrayBuffer);
+      const buffer = Buffer.from(arrayBuffer);
       const { url } = await put(
         `foodie-pos/menus/${new Date().getTime()}-${file.name}`,
         buffer,
