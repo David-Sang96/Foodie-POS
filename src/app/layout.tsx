@@ -1,3 +1,4 @@
+import ScrollToTopClient from "@/components/ScrollToTop,";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "react-hot-toast";
@@ -18,16 +19,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <ScrollToTopClient />
         <Toaster
           toastOptions={{
-            // Define default options
-            className: "",
             duration: 5000,
             style: {
               background: "#363636",
               color: "#fff",
             },
-            // Default options for specific types
+
             success: {
               duration: 3000,
             },
